@@ -13,7 +13,14 @@ COPY . /var/www/html/
 RUN cd /var/www/html && composer install --no-dev --optimize-autoloader
 
 # Configurar Apache para usar la carpeta public/
-RUN sed -i 's|/var/www/html|/var/www/html/public|g' /etc/apache2/sites-available/000-default.conf
+RUN echo '<VirtualHost *:80>\n\
+    DocumentRoot /var/www/html/public\n\
+    <Directory /var/www/html/public>\n\
+        AllowOverride All\n\
+        Require all granted\n\
+        Options -MultiViews\n\
+    </Directory>\n\
+</VirtualHost>' > /etc/apache2/sites-available/000-default.conf
 
 # Habilitar mod_rewrite
 RUN a2enmod rewrite
