@@ -19,14 +19,8 @@ class Scraper
             'lang'     => 'es',
         ],
         [
-            'name'     => 'Transfermarkt Mundial',
-            'url'      => 'https://www.transfermarkt.es/aktuell/rss/news',
-            'category' => 'Mundial 2026',
-            'lang'     => 'es',
-        ],
-        [
-            'name'     => 'Transfermarkt Fichajes',
-            'url'      => 'https://www.transfermarkt.es/aktuell/rss/transfers',
+            'name'     => 'Transfermarkt',
+            'url'      => 'https://www.transfermarkt.es/rss/news',
             'category' => 'Fichajes',
             'lang'     => 'es',
         ],
