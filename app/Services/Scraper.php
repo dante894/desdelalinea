@@ -11,55 +11,67 @@ use App\Core\Database;
 class Scraper
 {
     private array $sources = [
+        // Fuentes en español (sin traducción)
         [
             'name'     => 'ESPN Argentina',
             'url'      => 'https://www.espn.com.ar/espn/rss/news',
             'category' => 'Deportes',
+            'lang'     => 'es',
         ],
+        [
+            'name'     => 'Transfermarkt Mundial',
+            'url'      => 'https://www.transfermarkt.es/aktuell/rss/news',
+            'category' => 'Mundial 2026',
+            'lang'     => 'es',
+        ],
+        [
+            'name'     => 'Transfermarkt Fichajes',
+            'url'      => 'https://www.transfermarkt.es/aktuell/rss/transfers',
+            'category' => 'Fichajes',
+            'lang'     => 'es',
+        ],
+        // Fuentes en inglés (se traducen)
         [
             'name'     => 'ESPN Fútbol',
             'url'      => 'https://www.espn.com/espn/rss/soccer/news',
             'category' => 'Fútbol',
+            'lang'     => 'en',
         ],
         [
             'name'     => 'ESPN NBA',
             'url'      => 'https://www.espn.com/espn/rss/nba/news',
             'category' => 'Basketball',
+            'lang'     => 'en',
         ],
         [
             'name'     => 'ESPN NFL',
             'url'      => 'https://www.espn.com/espn/rss/nfl/news',
             'category' => 'Americano',
+            'lang'     => 'en',
         ],
         [
             'name'     => 'BBC Sport',
             'url'      => 'https://feeds.bbci.co.uk/sport/rss.xml',
             'category' => 'Internacional',
+            'lang'     => 'en',
         ],
         [
             'name'     => 'BBC Fútbol',
             'url'      => 'https://feeds.bbci.co.uk/sport/football/rss.xml',
             'category' => 'Fútbol',
+            'lang'     => 'en',
         ],
         [
             'name'     => 'Sky Sports',
             'url'      => 'https://www.skysports.com/rss/12040',
             'category' => 'Internacional',
-        ],
-        [
-            'name'     => 'Goal.com',
-            'url'      => 'https://www.goal.com/feeds/en/news',
-            'category' => 'Fútbol',
-        ],
-        [
-            'name'     => 'UEFA',
-            'url'      => 'https://www.uefa.com/rssfeed/index.xml',
-            'category' => 'Fútbol',
+            'lang'     => 'en',
         ],
         [
             'name'     => 'Fox Sports',
             'url'      => 'https://api.foxsports.com/v1/rss?partnerKey=zBaFxRyGKCfxBagJG9b8pqLyndmvo7UU',
             'category' => 'Deportes',
+            'lang'     => 'en',
         ],
     ];
 
@@ -91,10 +103,18 @@ class Scraper
                         INSERT INTO news (title, slug, summary, image_url, source_url, source_name, category, published_at)
                         VALUES (?, ?, ?, ?, ?, ?, ?, ?)
                     ");
+                    // Traducir si la fuente está en inglés
+                    $title   = $item['title'];
+                    $summary = $item['description'];
+                    if (($src['lang'] ?? 'es') === 'en') {
+                        $title   = $this->translate($title);
+                        $summary = $this->translate($summary);
+                    }
+
                     $stmt->execute([
-                        $item['title'],
+                        $title,
                         $slug,
-                        $item['description'],
+                        $summary,
                         $item['image'] ?? null,
                         $item['link'],
                         $src['name'],
@@ -194,6 +214,26 @@ class Scraper
             return (new \DateTime($raw))->format('Y-m-d H:i:s');
         } catch (\Throwable) {
             return date('Y-m-d H:i:s');
+        }
+    }
+
+    private function translate(string $text): string
+    {
+        if (empty(trim($text))) return $text;
+        try {
+            $url  = 'https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=es&dt=t&q=' . rawurlencode($text);
+            $ctx  = stream_context_create(['http' => ['timeout' => 5, 'user_agent' => 'Mozilla/5.0'], 'ssl' => ['verify_peer' => false]]);
+            $resp = @file_get_contents($url, false, $ctx);
+            if (!$resp) return $text;
+            $data = json_decode($resp, true);
+            if (!isset($data[0])) return $text;
+            $translated = '';
+            foreach ($data[0] as $part) {
+                $translated .= $part[0] ?? '';
+            }
+            return $translated ?: $text;
+        } catch (\Throwable) {
+            return $text;
         }
     }
 
