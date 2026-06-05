@@ -12,34 +12,54 @@ class Scraper
 {
     private array $sources = [
         [
-            'name'     => 'Infobae Deportes',
-            'url'      => 'https://www.infobae.com/feeds/rss/deportes/',
-            'category' => 'Deportes',
-        ],
-        [
-            'name'     => 'TyC Sports',
-            'url'      => 'https://www.tycsports.com/rss.xml',
-            'category' => 'Fútbol',
-        ],
-        [
-            'name'     => 'Ole',
-            'url'      => 'https://www.ole.com.ar/rss/ultimas-noticias.xml',
-            'category' => 'Fútbol',
-        ],
-        [
             'name'     => 'ESPN Argentina',
             'url'      => 'https://www.espn.com.ar/espn/rss/news',
             'category' => 'Deportes',
         ],
         [
-            'name'     => 'Marca',
-            'url'      => 'https://e00-marca.uecdn.es/rss/futbol/internacional.xml',
+            'name'     => 'ESPN Fútbol',
+            'url'      => 'https://www.espn.com/espn/rss/soccer/news',
+            'category' => 'Fútbol',
+        ],
+        [
+            'name'     => 'ESPN NBA',
+            'url'      => 'https://www.espn.com/espn/rss/nba/news',
+            'category' => 'Basketball',
+        ],
+        [
+            'name'     => 'ESPN NFL',
+            'url'      => 'https://www.espn.com/espn/rss/nfl/news',
+            'category' => 'Americano',
+        ],
+        [
+            'name'     => 'BBC Sport',
+            'url'      => 'https://feeds.bbci.co.uk/sport/rss.xml',
             'category' => 'Internacional',
         ],
         [
-            'name'     => 'Infobae Fútbol',
-            'url'      => 'https://www.infobae.com/feeds/rss/america/deportes/futbol/',
+            'name'     => 'BBC Fútbol',
+            'url'      => 'https://feeds.bbci.co.uk/sport/football/rss.xml',
             'category' => 'Fútbol',
+        ],
+        [
+            'name'     => 'Sky Sports',
+            'url'      => 'https://www.skysports.com/rss/12040',
+            'category' => 'Internacional',
+        ],
+        [
+            'name'     => 'Goal.com',
+            'url'      => 'https://www.goal.com/feeds/en/news',
+            'category' => 'Fútbol',
+        ],
+        [
+            'name'     => 'UEFA',
+            'url'      => 'https://www.uefa.com/rssfeed/index.xml',
+            'category' => 'Fútbol',
+        ],
+        [
+            'name'     => 'Fox Sports',
+            'url'      => 'https://api.foxsports.com/v1/rss?partnerKey=zBaFxRyGKCfxBagJG9b8pqLyndmvo7UU',
+            'category' => 'Deportes',
         ],
     ];
 
