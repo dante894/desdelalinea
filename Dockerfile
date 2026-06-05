@@ -12,13 +12,18 @@ COPY . /var/www/html/
 # Instalar dependencias
 RUN cd /var/www/html && composer install --no-dev --optimize-autoloader
 
-# Configurar Apache para usar la carpeta public/
+# Configurar Apache
 RUN echo '<VirtualHost *:80>\n\
     DocumentRoot /var/www/html/public\n\
     <Directory /var/www/html/public>\n\
         AllowOverride All\n\
         Require all granted\n\
-        Options -MultiViews\n\
+        Options -MultiViews +FollowSymLinks\n\
+        RewriteEngine On\n\
+        RewriteBase /\n\
+        RewriteCond %{REQUEST_FILENAME} !-f\n\
+        RewriteCond %{REQUEST_FILENAME} !-d\n\
+        RewriteRule ^ index.php [QSA,L]\n\
     </Directory>\n\
 </VirtualHost>' > /etc/apache2/sites-available/000-default.conf
 
