@@ -73,6 +73,7 @@ footer strong{color:var(--green)}
   <ul class="nav-links">
     <li><a href="/">Inicio</a></li>
     <li><a href="/argentina">🇦🇷 Argentina</a></li>
+    <li><a href="/europa">🌍 Europa</a></li>
     <li><a href="/mundial">🏆 Mundial</a></li>
     <li><a href="/noticias">Noticias</a></li>
     <?php if (!empty($_SESSION['user_id'])): ?>

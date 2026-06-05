@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Core\Database;
+use App\Services\FootballApiRapid;
 
 class ArgentinaController
 {
@@ -10,19 +11,45 @@ class ArgentinaController
 
     public function index(): void
     {
-        $db   = Database::getInstance();
-        $page = max(1, (int)($_GET['page'] ?? 1));
-        $offset = ($page - 1) * $this->perPage;
+        $db  = Database::getInstance();
+        $api = new FootballApiRapid();
+        $lg  = $api->leagues['argentina'];
 
+        $tab     = $_GET['tab'] ?? 'noticias';
+        $page    = max(1, (int)($_GET['page'] ?? 1));
+        $offset  = ($page - 1) * $this->perPage;
+
+        // Noticias
         $total = (int)$db->query("SELECT COUNT(*) FROM news WHERE source_name = 'ESPN Argentina' OR title LIKE '%Argentina%' OR title LIKE '%Boca%' OR title LIKE '%River%' OR title LIKE '%selección%' OR title LIKE '%AFA%'")->fetchColumn();
-
         $stmt = $db->prepare("SELECT * FROM news WHERE source_name = 'ESPN Argentina' OR title LIKE '%Argentina%' OR title LIKE '%Boca%' OR title LIKE '%River%' OR title LIKE '%selección%' OR title LIKE '%AFA%' ORDER BY scraped_at DESC LIMIT :limit OFFSET :offset");
         $stmt->bindValue(':limit',  $this->perPage, \PDO::PARAM_INT);
         $stmt->bindValue(':offset', $offset,        \PDO::PARAM_INT);
         $stmt->execute();
         $news = $stmt->fetchAll(\PDO::FETCH_ASSOC);
-
         $totalPages = (int)ceil($total / $this->perPage);
+
+        // API data — solo cargar la pestaña activa para ahorrar requests
+        $standings   = [];
+        $recent      = [];
+        $upcoming    = [];
+        $topScorers  = [];
+        $topAssists  = [];
+        $live        = [];
+
+        if ($tab === 'tabla' || $tab === 'todo') {
+            $standings = $api->getStandings($lg['id'], $lg['season']);
+        }
+        if ($tab === 'resultados') {
+            $recent = $api->getMatches($lg['id'], $lg['season'], 'FT', 10);
+            $live   = $api->getLiveMatches($lg['id']);
+        }
+        if ($tab === 'proximos') {
+            $upcoming = $api->getNextMatches($lg['id'], $lg['season'], 10);
+        }
+        if ($tab === 'jugadores') {
+            $topScorers = $api->getTopScorers($lg['id'], $lg['season']);
+            $topAssists = $api->getTopAssists($lg['id'], $lg['season']);
+        }
 
         require __DIR__ . '/../Views/argentina.php';
     }

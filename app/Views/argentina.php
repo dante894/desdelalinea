@@ -7,43 +7,102 @@
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{--green:#00c853;--celeste:#74b9ff;--dark:#0a0f0a;--dark2:#111711;--dark3:#0a1525;--card:#0f1c2e;--border:#1a2e4a;--text:#e8f5e8;--muted:#6a8f6a}
-body{background:var(--dark);color:var(--text);font-family:'Barlow',sans-serif}
-nav{display:flex;align-items:center;justify-content:space-between;padding:0 2rem;height:60px;background:rgba(10,15,10,.95);border-bottom:1px solid #1e2e1e;position:sticky;top:0;z-index:100}
-.nav-brand{font-family:'Barlow Condensed',sans-serif;font-size:1.6rem;font-weight:900;color:var(--green);text-decoration:none}
+:root{--cel:#74b9ff;--cel2:#0984e3;--dark:#08101a;--dark2:#0d1829;--card:#0f1e30;--border:#1a3050;--text:#e8f0f8;--muted:#4a7a9f;--gold:#ffd600}
+body{background:var(--dark);color:var(--text);font-family:'Barlow',sans-serif;min-height:100vh}
+<?php include __DIR__ . '/partials/nav.css.php'; ?>
+nav{display:flex;align-items:center;justify-content:space-between;padding:0 2rem;height:60px;background:rgba(8,16,26,.96);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100}
+.nav-brand{font-family:'Barlow Condensed',sans-serif;font-size:1.6rem;font-weight:900;color:#00c853;text-decoration:none}
 .nav-brand span{color:#fff}
 .nav-links{display:flex;gap:1.5rem;list-style:none}
 .nav-links a{color:var(--muted);text-decoration:none;font-size:.85rem;font-weight:600;text-transform:uppercase;letter-spacing:.5px;transition:color .2s}
-.nav-links a:hover,.nav-links a.active{color:var(--green)}
+.nav-links a:hover,.nav-links a.active{color:var(--cel)}
 .container{max-width:1200px;margin:0 auto;padding:0 1.5rem}
+.hero{background:linear-gradient(135deg,#08101a,#0d1f3a,#081525);border-bottom:3px solid var(--cel);padding:2.5rem 0;position:relative;overflow:hidden}
+.hero::after{content:'🇦🇷';position:absolute;right:4rem;top:50%;transform:translateY(-50%);font-size:9rem;opacity:.06;pointer-events:none}
+.hero h1{font-family:'Barlow Condensed',sans-serif;font-size:clamp(2.5rem,5vw,4rem);font-weight:900;color:#fff;text-transform:uppercase;letter-spacing:2px}
+.hero h1 span{color:var(--cel)}
+.hero p{color:var(--muted);margin-top:.5rem}
+.tabs{display:flex;gap:0;border-bottom:2px solid var(--border);margin:0}
+.tab{padding:.8rem 1.4rem;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.9rem;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .2s;text-decoration:none}
+.tab:hover{color:var(--text)}
+.tab.active{color:var(--cel);border-bottom-color:var(--cel)}
+.tab-content{display:none;padding:2rem 0}
+.tab-content.active{display:block}
 
-.arg-hero{background:linear-gradient(135deg,#0a0f1a,#0d1f3a,#0a1525);border-bottom:3px solid var(--celeste);padding:2.5rem 0;position:relative;overflow:hidden}
-.arg-hero::before{content:'🇦🇷';position:absolute;right:3rem;top:50%;transform:translateY(-50%);font-size:8rem;opacity:.08}
-.arg-hero h1{font-family:'Barlow Condensed',sans-serif;font-size:clamp(2.5rem,5vw,4rem);font-weight:900;color:#fff;text-transform:uppercase;letter-spacing:2px}
-.arg-hero h1 span{color:var(--celeste)}
-.arg-hero p{color:#6a9fbf;margin-top:.5rem}
+/* STANDINGS */
+.standings-wrap{overflow-x:auto}
+.standings-table{width:100%;border-collapse:collapse;font-size:.85rem;min-width:600px}
+.standings-table th{background:var(--dark2);padding:.65rem .75rem;text-align:center;font-family:'Barlow Condensed',sans-serif;font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted)}
+.standings-table th:first-child,.standings-table th:nth-child(2){text-align:left}
+.standings-table td{padding:.65rem .75rem;border-bottom:1px solid var(--border);text-align:center}
+.standings-table td:first-child,.standings-table td:nth-child(2){text-align:left}
+.standings-table tr:last-child td{border-bottom:none}
+.standings-table tr:hover td{background:rgba(116,185,255,.04)}
+.team-cell{display:flex;align-items:center;gap:.6rem}
+.team-logo{width:22px;height:22px;object-fit:contain}
+.pos{font-weight:700;color:var(--muted);width:28px}
+.pos-q1{color:var(--cel);font-weight:800}
+.pos-q2{color:#55efc4;font-weight:700}
+.pos-rel{color:#e17055;font-weight:700}
+.pts{font-weight:800;color:var(--cel);font-size:1rem}
+.form-badge{display:inline-block;width:18px;height:18px;border-radius:3px;font-size:.6rem;font-weight:800;line-height:18px;text-align:center;color:#fff}
+.form-W{background:#00b894}
+.form-D{background:#636e72}
+.form-L{background:#d63031}
 
-.section{padding:2.5rem 0}
-.section-title{font-family:'Barlow Condensed',sans-serif;font-size:1.2rem;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--celeste);border-left:3px solid var(--celeste);padding-left:.75rem;margin-bottom:1.5rem}
-.news-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.25rem}
+/* MATCHES */
+.matches-list{display:grid;gap:.6rem}
+.match-card{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:.9rem 1.2rem;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:.75rem;transition:border-color .2s}
+.match-card:hover{border-color:var(--cel)}
+.match-card.live{border-color:#e53935;box-shadow:0 0 10px rgba(229,57,53,.15)}
+.team-home{display:flex;align-items:center;gap:.6rem}
+.team-away{display:flex;align-items:center;gap:.6rem;flex-direction:row-reverse;text-align:right}
+.team-logo-sm{width:24px;height:24px;object-fit:contain}
+.team-name{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1rem}
+.score-box{text-align:center;min-width:80px}
+.score-num{font-family:'Barlow Condensed',sans-serif;font-size:1.6rem;font-weight:900;color:var(--cel);letter-spacing:3px}
+.score-vs{font-family:'Barlow Condensed',sans-serif;font-size:1.2rem;font-weight:700;color:var(--muted)}
+.match-status{font-size:.7rem;text-transform:uppercase;letter-spacing:.5px;margin-top:.2rem}
+.status-live{color:#e53935;animation:blink 1.5s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.4}}
+.status-ft{color:var(--muted)}
+.status-ns{color:#55efc4}
+.match-round{font-size:.65rem;color:var(--muted)}
+
+/* PLAYERS */
+.players-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1rem}
+.player-card{background:var(--card);border:1px solid var(--border);border-radius:8px;overflow:hidden;transition:transform .2s,border-color .2s}
+.player-card:hover{transform:translateY(-3px);border-color:var(--cel)}
+.player-photo{width:100%;height:140px;object-fit:cover;object-position:top;background:var(--dark2)}
+.player-photo-placeholder{width:100%;height:140px;display:flex;align-items:center;justify-content:center;background:var(--dark2);font-size:3rem}
+.player-body{padding:.75rem}
+.player-name{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1rem;color:#fff}
+.player-club{display:flex;align-items:center;gap:.4rem;font-size:.75rem;color:var(--muted);margin:.25rem 0}
+.player-club img{width:16px;height:16px;object-fit:contain}
+.player-stats{display:grid;grid-template-columns:1fr 1fr;gap:.4rem;margin-top:.5rem}
+.stat-box{background:var(--dark2);border-radius:4px;padding:.35rem .5rem;text-align:center}
+.stat-num{font-family:'Barlow Condensed',sans-serif;font-size:1.2rem;font-weight:900;color:var(--cel)}
+.stat-lbl{font-size:.6rem;text-transform:uppercase;letter-spacing:.5px;color:var(--muted)}
+.rank-num{display:inline-block;background:var(--cel);color:var(--dark);font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:.8rem;width:22px;height:22px;border-radius:50%;line-height:22px;text-align:center;margin-right:.4rem}
+
+/* NEWS */
+.news-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1rem}
 .news-card{background:var(--card);border:1px solid var(--border);border-radius:8px;overflow:hidden;transition:transform .2s,border-color .2s}
-.news-card:hover{transform:translateY(-3px);border-color:var(--celeste)}
+.news-card:hover{transform:translateY(-3px);border-color:var(--cel)}
 .news-card a{text-decoration:none;color:inherit;display:flex;flex-direction:column}
-.card-img{height:160px;background:var(--dark3);overflow:hidden}
-.card-img img{width:100%;height:100%;object-fit:cover;transition:transform .3s}
-.news-card:hover .card-img img{transform:scale(1.04)}
+.card-img{height:150px;overflow:hidden;background:var(--dark2)}
+.card-img img{width:100%;height:100%;object-fit:cover}
 .card-no-img{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:2.5rem}
-.card-body{padding:1rem;flex:1;display:flex;flex-direction:column;gap:.4rem}
-.card-title{font-family:'Barlow Condensed',sans-serif;font-size:1.1rem;font-weight:700;line-height:1.3;flex:1;color:#fff}
-.card-summary{font-size:.8rem;color:#6a9fbf;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.card-meta{font-size:.72rem;color:#4a7a9f;margin-top:auto}
-.card-source{font-size:.7rem;color:var(--celeste);font-weight:600}
-.pagination{display:flex;gap:.5rem;justify-content:center;padding:3rem 0}
-.page-btn{background:var(--card);border:1px solid var(--border);color:var(--text);padding:.5rem 1rem;border-radius:4px;text-decoration:none;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.95rem;transition:all .2s}
-.page-btn:hover,.page-btn.active{background:var(--celeste);border-color:var(--celeste);color:#0a0f1a}
-.empty{text-align:center;padding:4rem;color:var(--muted)}
-footer{background:#070d0f;border-top:1px solid var(--border);padding:2rem;text-align:center;color:var(--muted);font-size:.85rem}
-footer strong{color:var(--green)}
+.card-body{padding:.9rem;flex:1;display:flex;flex-direction:column;gap:.3rem}
+.card-title{font-family:'Barlow Condensed',sans-serif;font-size:1.05rem;font-weight:700;line-height:1.3;color:#fff;flex:1}
+.card-meta{font-size:.7rem;color:var(--muted)}
+.section-hdr{font-family:'Barlow Condensed',sans-serif;font-size:1.1rem;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--cel);border-left:3px solid var(--cel);padding-left:.6rem;margin-bottom:1rem}
+.empty{text-align:center;padding:3rem;color:var(--muted)}
+.pagination{display:flex;gap:.5rem;justify-content:center;padding:2rem 0}
+.page-btn{background:var(--card);border:1px solid var(--border);color:var(--text);padding:.45rem .9rem;border-radius:4px;text-decoration:none;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.9rem;transition:all .2s}
+.page-btn:hover,.page-btn.active{background:var(--cel);border-color:var(--cel);color:var(--dark)}
+footer{background:#060e18;border-top:1px solid var(--border);padding:2rem;text-align:center;color:var(--muted);font-size:.85rem;margin-top:2rem}
+footer strong{color:#00c853}
 </style>
 </head>
 <body>
@@ -52,72 +111,262 @@ footer strong{color:var(--green)}
   <ul class="nav-links">
     <li><a href="/">Inicio</a></li>
     <li><a href="/argentina" class="active">🇦🇷 Argentina</a></li>
+    <li><a href="/europa">🌍 Europa</a></li>
     <li><a href="/mundial">🏆 Mundial</a></li>
     <li><a href="/noticias">Noticias</a></li>
     <?php if (!empty($_SESSION['user_id'])): ?>
-    <li><a href="/admin" style="background:var(--green);color:var(--dark);padding:.3rem .8rem;border-radius:4px">Admin</a></li>
+    <li><a href="/admin" style="background:#00c853;color:#0a0f0a;padding:.3rem .8rem;border-radius:4px">Admin</a></li>
     <?php endif; ?>
   </ul>
 </nav>
 
-<div class="arg-hero">
+<div class="hero">
   <div class="container">
-    <h1>🇦🇷 Deportes <span>Argentina</span></h1>
-    <p>Fútbol, selección, Boca, River y todo el deporte argentino</p>
+    <h1>🇦🇷 Liga <span>Argentina</span></h1>
+    <p>Liga Profesional · Tabla, resultados, goleadores y más</p>
   </div>
 </div>
 
 <div class="container">
-  <div class="section">
-    <p class="section-title">Últimas noticias (<?= $total ?>)</p>
+  <div class="tabs">
+    <a href="?tab=tabla"      class="tab <?= $tab==='tabla'?'active':''      ?>" onclick="setTab('tabla',this)">Tabla</a>
+    <a href="?tab=resultados" class="tab <?= $tab==='resultados'?'active':'' ?>" onclick="setTab('resultados',this)">Resultados</a>
+    <a href="?tab=proximos"   class="tab <?= $tab==='proximos'?'active':''   ?>" onclick="setTab('proximos',this)">Próximos</a>
+    <a href="?tab=jugadores"  class="tab <?= $tab==='jugadores'?'active':''  ?>" onclick="setTab('jugadores',this)">Jugadores</a>
+    <a href="?tab=noticias"   class="tab <?= $tab==='noticias'?'active':''   ?>" onclick="setTab('noticias',this)">Noticias</a>
+  </div>
+
+  <!-- TABLA -->
+  <div id="tab-tabla" class="tab-content <?= $tab==='tabla'?'active':'' ?>">
+    <?php if (!empty($standings)): ?>
+    <div class="standings-wrap">
+      <table class="standings-table">
+        <thead><tr>
+          <th>#</th><th>Equipo</th><th>PJ</th><th>G</th><th>E</th><th>P</th>
+          <th>GF</th><th>GC</th><th>DG</th><th>Pts</th><th>Forma</th>
+        </tr></thead>
+        <tbody>
+        <?php foreach ($standings as $row):
+          $pos = $row['rank'];
+          $posClass = $pos <= 4 ? 'pos-q1' : ($pos >= count($standings)-2 ? 'pos-rel' : 'pos');
+        ?>
+        <tr>
+          <td class="<?= $posClass ?>"><?= $pos ?></td>
+          <td>
+            <div class="team-cell">
+              <?php if ($row['team']['logo'] ?? false): ?>
+              <img class="team-logo" src="<?= htmlspecialchars($row['team']['logo']) ?>" alt="">
+              <?php endif; ?>
+              <?= htmlspecialchars($row['team']['name']) ?>
+            </div>
+          </td>
+          <td><?= $row['all']['played'] ?></td>
+          <td><?= $row['all']['win'] ?></td>
+          <td><?= $row['all']['draw'] ?></td>
+          <td><?= $row['all']['lose'] ?></td>
+          <td><?= $row['all']['goals']['for'] ?></td>
+          <td><?= $row['all']['goals']['against'] ?></td>
+          <td><?= $row['goalsDiff'] ?></td>
+          <td class="pts"><?= $row['points'] ?></td>
+          <td>
+            <?php if ($row['form'] ?? false): ?>
+            <?php foreach (str_split($row['form']) as $f): ?>
+            <span class="form-badge form-<?= $f ?>"><?= $f ?></span>
+            <?php endforeach; ?>
+            <?php endif; ?>
+          </td>
+        </tr>
+        <?php endforeach; ?>
+        </tbody>
+      </table>
+    </div>
+    <p style="font-size:.72rem;color:var(--muted);margin-top:1rem">
+      <span style="color:var(--cel)">■</span> Clasifican a Copa Libertadores &nbsp;
+      <span style="color:#55efc4">■</span> Clasifican a Copa Sudamericana &nbsp;
+      <span style="color:#e17055">■</span> Zona de descenso
+    </p>
+    <?php else: ?>
+    <div class="empty">Tabla no disponible. Verificá la API key.</div>
+    <?php endif; ?>
+  </div>
+
+  <!-- RESULTADOS -->
+  <div id="tab-resultados" class="tab-content <?= $tab==='resultados'?'active':'' ?>">
+    <?php if (!empty($live)): ?>
+    <p class="section-hdr" style="margin-bottom:1rem;color:#e53935">⚡ En vivo</p>
+    <div class="matches-list" style="margin-bottom:2rem">
+      <?php foreach ($live as $m): ?>
+      <?php include __DIR__ . '/partials/match_row.php'; ?>
+      <?php endforeach; ?>
+    </div>
+    <?php endif; ?>
+    <p class="section-hdr">Últimos resultados</p>
+    <?php if (!empty($recent)): ?>
+    <div class="matches-list">
+      <?php foreach (array_reverse($recent) as $m): ?>
+      <div class="match-card">
+        <div class="team-home">
+          <?php if ($m['teams']['home']['logo'] ?? false): ?>
+          <img class="team-logo-sm" src="<?= htmlspecialchars($m['teams']['home']['logo']) ?>" alt="">
+          <?php endif; ?>
+          <span class="team-name"><?= htmlspecialchars($m['teams']['home']['name']) ?></span>
+        </div>
+        <div class="score-box">
+          <div class="score-num"><?= $m['goals']['home'] ?? '—' ?> - <?= $m['goals']['away'] ?? '—' ?></div>
+          <div class="match-status status-ft">Final</div>
+          <div class="match-round"><?= htmlspecialchars($m['league']['round'] ?? '') ?></div>
+        </div>
+        <div class="team-away">
+          <?php if ($m['teams']['away']['logo'] ?? false): ?>
+          <img class="team-logo-sm" src="<?= htmlspecialchars($m['teams']['away']['logo']) ?>" alt="">
+          <?php endif; ?>
+          <span class="team-name"><?= htmlspecialchars($m['teams']['away']['name']) ?></span>
+        </div>
+      </div>
+      <?php endforeach; ?>
+    </div>
+    <?php else: ?><div class="empty">No hay resultados recientes</div><?php endif; ?>
+  </div>
+
+  <!-- PRÓXIMOS -->
+  <div id="tab-proximos" class="tab-content <?= $tab==='proximos'?'active':'' ?>">
+    <p class="section-hdr">Próximos partidos</p>
+    <?php if (!empty($upcoming)): ?>
+    <div class="matches-list">
+      <?php foreach ($upcoming as $m): ?>
+      <div class="match-card">
+        <div class="team-home">
+          <?php if ($m['teams']['home']['logo'] ?? false): ?>
+          <img class="team-logo-sm" src="<?= htmlspecialchars($m['teams']['home']['logo']) ?>" alt="">
+          <?php endif; ?>
+          <span class="team-name"><?= htmlspecialchars($m['teams']['home']['name']) ?></span>
+        </div>
+        <div class="score-box">
+          <div class="score-vs">VS</div>
+          <div class="match-status status-ns"><?= date('d/m H:i', strtotime($m['fixture']['date'])) ?></div>
+          <div class="match-round"><?= htmlspecialchars($m['league']['round'] ?? '') ?></div>
+        </div>
+        <div class="team-away">
+          <?php if ($m['teams']['away']['logo'] ?? false): ?>
+          <img class="team-logo-sm" src="<?= htmlspecialchars($m['teams']['away']['logo']) ?>" alt="">
+          <?php endif; ?>
+          <span class="team-name"><?= htmlspecialchars($m['teams']['away']['name']) ?></span>
+        </div>
+      </div>
+      <?php endforeach; ?>
+    </div>
+    <?php else: ?><div class="empty">No hay partidos programados</div><?php endif; ?>
+  </div>
+
+  <!-- JUGADORES -->
+  <div id="tab-jugadores" class="tab-content <?= $tab==='jugadores'?'active':'' ?>">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:2rem">
+      <div>
+        <p class="section-hdr">⚽ Goleadores</p>
+        <?php if (!empty($topScorers)): ?>
+        <div class="players-grid" style="grid-template-columns:1fr">
+          <?php foreach ($topScorers as $i => $p):
+            $pl = $p['player']; $st = $p['statistics'][0] ?? [];
+          ?>
+          <div class="player-card" style="display:flex;align-items:center;gap:.75rem;padding:.75rem">
+            <span class="rank-num"><?= $i+1 ?></span>
+            <?php if ($pl['photo'] ?? false): ?>
+            <img src="<?= htmlspecialchars($pl['photo']) ?>" style="width:44px;height:44px;border-radius:50%;object-fit:cover;object-position:top;background:var(--dark2)" alt="">
+            <?php else: ?>
+            <div style="width:44px;height:44px;border-radius:50%;background:var(--dark2);display:flex;align-items:center;justify-content:center;font-size:1.2rem">👤</div>
+            <?php endif; ?>
+            <div style="flex:1">
+              <div class="player-name"><?= htmlspecialchars($pl['name']) ?></div>
+              <div class="player-club">
+                <?php if ($st['team']['logo'] ?? false): ?>
+                <img src="<?= htmlspecialchars($st['team']['logo']) ?>" alt="" style="width:14px;height:14px;object-fit:contain">
+                <?php endif; ?>
+                <?= htmlspecialchars($st['team']['name'] ?? '') ?>
+              </div>
+            </div>
+            <div style="text-align:center">
+              <div class="stat-num"><?= $st['goals']['total'] ?? 0 ?></div>
+              <div class="stat-lbl">Goles</div>
+            </div>
+          </div>
+          <?php endforeach; ?>
+        </div>
+        <?php else: ?><div class="empty">No disponible</div><?php endif; ?>
+      </div>
+      <div>
+        <p class="section-hdr">🎯 Asistencias</p>
+        <?php if (!empty($topAssists)): ?>
+        <div class="players-grid" style="grid-template-columns:1fr">
+          <?php foreach ($topAssists as $i => $p):
+            $pl = $p['player']; $st = $p['statistics'][0] ?? [];
+          ?>
+          <div class="player-card" style="display:flex;align-items:center;gap:.75rem;padding:.75rem">
+            <span class="rank-num" style="background:var(--cel)"><?= $i+1 ?></span>
+            <?php if ($pl['photo'] ?? false): ?>
+            <img src="<?= htmlspecialchars($pl['photo']) ?>" style="width:44px;height:44px;border-radius:50%;object-fit:cover;object-position:top;background:var(--dark2)" alt="">
+            <?php else: ?>
+            <div style="width:44px;height:44px;border-radius:50%;background:var(--dark2);display:flex;align-items:center;justify-content:center;font-size:1.2rem">👤</div>
+            <?php endif; ?>
+            <div style="flex:1">
+              <div class="player-name"><?= htmlspecialchars($pl['name']) ?></div>
+              <div class="player-club">
+                <?php if ($st['team']['logo'] ?? false): ?>
+                <img src="<?= htmlspecialchars($st['team']['logo']) ?>" alt="" style="width:14px;height:14px;object-fit:contain">
+                <?php endif; ?>
+                <?= htmlspecialchars($st['team']['name'] ?? '') ?>
+              </div>
+            </div>
+            <div style="text-align:center">
+              <div class="stat-num" style="color:var(--cel)"><?= $st['goals']['assists'] ?? 0 ?></div>
+              <div class="stat-lbl">Asist.</div>
+            </div>
+          </div>
+          <?php endforeach; ?>
+        </div>
+        <?php else: ?><div class="empty">No disponible</div><?php endif; ?>
+      </div>
+    </div>
+  </div>
+
+  <!-- NOTICIAS -->
+  <div id="tab-noticias" class="tab-content <?= $tab==='noticias'?'active':'' ?>">
+    <p class="section-hdr">Noticias Argentina (<?= $total ?>)</p>
     <?php if (!empty($news)): ?>
     <div class="news-grid">
       <?php foreach ($news as $n): ?>
       <article class="news-card">
         <a href="/noticia?id=<?= $n['id'] ?>">
           <div class="card-img">
-            <?php if ($n['image_url']): ?>
-              <img src="<?= htmlspecialchars($n['image_url']) ?>" alt="" loading="lazy">
-            <?php else: ?>
-              <div class="card-no-img">🇦🇷</div>
-            <?php endif; ?>
+            <?php if ($n['image_url']): ?><img src="<?= htmlspecialchars($n['image_url']) ?>" alt="" loading="lazy">
+            <?php else: ?><div class="card-no-img">🇦🇷</div><?php endif; ?>
           </div>
           <div class="card-body">
             <h2 class="card-title"><?= htmlspecialchars($n['title']) ?></h2>
-            <?php if ($n['summary']): ?>
-            <p class="card-summary"><?= htmlspecialchars($n['summary']) ?></p>
-            <?php endif; ?>
-            <span class="card-source"><?= htmlspecialchars($n['source_name'] ?? '') ?></span>
-            <span class="card-meta"><?= date('d/m/Y H:i', strtotime($n['scraped_at'])) ?></span>
+            <span class="card-meta"><?= htmlspecialchars($n['source_name']??'') ?> · <?= date('d/m H:i',strtotime($n['scraped_at'])) ?></span>
           </div>
         </a>
       </article>
       <?php endforeach; ?>
     </div>
-
     <?php if ($totalPages > 1): ?>
     <div class="pagination">
-      <?php if ($page > 1): ?>
-      <a href="?page=<?= $page-1 ?>" class="page-btn">← Anterior</a>
-      <?php endif; ?>
-      <?php for ($p = max(1,$page-2); $p <= min($totalPages,$page+2); $p++): ?>
-      <a href="?page=<?= $p ?>" class="page-btn <?= $p===$page?'active':'' ?>"><?= $p ?></a>
+      <?php if ($page > 1): ?><a href="?tab=noticias&page=<?= $page-1 ?>" class="page-btn">← Anterior</a><?php endif; ?>
+      <?php for ($p=max(1,$page-2);$p<=min($totalPages,$page+2);$p++): ?>
+      <a href="?tab=noticias&page=<?= $p ?>" class="page-btn <?= $p===$page?'active':'' ?>"><?= $p ?></a>
       <?php endfor; ?>
-      <?php if ($page < $totalPages): ?>
-      <a href="?page=<?= $page+1 ?>" class="page-btn">Siguiente →</a>
-      <?php endif; ?>
+      <?php if ($page < $totalPages): ?><a href="?tab=noticias&page=<?= $page+1 ?>" class="page-btn">Siguiente →</a><?php endif; ?>
     </div>
     <?php endif; ?>
-
-    <?php else: ?>
-    <div class="empty">
-      <h3>No hay noticias argentinas todavía</h3>
-      <p>Ejecutá el scraper desde el admin para traer noticias.</p>
-    </div>
-    <?php endif; ?>
+    <?php else: ?><div class="empty">No hay noticias argentinas. Ejecutá el scraper.</div><?php endif; ?>
   </div>
 </div>
 
-<footer><strong>Desde la Línea</strong> · Portal Deportivo · <?= date('Y') ?></footer>
+<footer><strong>Desde la Línea</strong> · Portal Deportivo · <?= date('Y') ?> · Datos: API-Football</footer>
+<script>
+function setTab(name,el){
+  event.preventDefault();
+  window.location.href='?tab='+name;
+}
+</script>
 </body>
 </html>
