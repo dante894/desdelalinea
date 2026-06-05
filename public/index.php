@@ -10,6 +10,8 @@ $router = new Router();
 $router->get('/',             'HomeController@index');
 $router->get('/noticias',     'NewsController@index');
 $router->get('/noticia',      'NewsController@show');
+$router->get('/argentina',    'ArgentinaController@index');
+$router->get('/mundial',      'MundialController@index');
 
 // Auth
 $router->get('/login',        'AuthController@login');

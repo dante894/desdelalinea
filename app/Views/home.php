@@ -72,6 +72,8 @@ footer strong{color:var(--green)}
   <a href="/" class="nav-brand">DESDE<span>LA</span>LÍNEA</a>
   <ul class="nav-links">
     <li><a href="/">Inicio</a></li>
+    <li><a href="/argentina">🇦🇷 Argentina</a></li>
+    <li><a href="/mundial">🏆 Mundial</a></li>
     <li><a href="/noticias">Noticias</a></li>
     <?php if (!empty($_SESSION['user_id'])): ?>
     <li><a href="/admin" class="nav-admin">Admin</a></li>
