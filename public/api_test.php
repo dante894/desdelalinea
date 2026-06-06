@@ -1,54 +1,23 @@
 <?php
 header('Content-Type: application/json; charset=utf-8');
-
-function espn(string $url): array {
-    $ctx = stream_context_create(['http' => ['timeout' => 15, 'ignore_errors' => true], 'ssl' => ['verify_peer' => false]]);
-    $resp = @file_get_contents($url, false, $ctx);
-    return $resp ? json_decode($resp, true) ?? [] : [];
+function espn($url) {
+    $ctx = stream_context_create(['http'=>['timeout'=>15,'ignore_errors'=>true],'ssl'=>['verify_peer'=>false]]);
+    $r = @file_get_contents($url, false, $ctx);
+    return $r ? json_decode($r, true) : [];
 }
-
 $action = $_GET['action'] ?? 'info';
-
-if ($action === 'scoreboard') {
-    $d = espn('https://site.api.espn.com/apis/site/v2/sports/soccer/arg.1/scoreboard');
-    // Mostrar primer evento como muestra
-    $ev = $d['events'][0] ?? null;
-    echo json_encode(['total_events' => count($d['events'] ?? []), 'sample_event' => $ev], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
-
-} elseif ($action === 'standings') {
+if ($action === 'standings') {
     $d = espn('https://site.api.espn.com/apis/v2/sports/soccer/arg.1/standings');
-    $group = $d['children'][0] ?? $d;
-    $entry = $group['standings']['entries'][0] ?? null;
-    echo json_encode([
-        'groups'       => array_column($d['children'] ?? [], 'name'),
-        'sample_entry' => $entry,
-        'stat_names'   => array_column($entry['stats'] ?? [], 'name'),
-    ], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
-
-} elseif ($action === 'summary') {
-    $id = $_GET['id'] ?? '';
-    $d = espn("https://site.api.espn.com/apis/site/v2/sports/soccer/arg.1/summary?event={$id}");
-    echo json_encode(['keys' => array_keys($d)], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
-
-} elseif ($action === 'leagues') {
-    // Probar otras ligas arg disponibles en ESPN
-    $tests = [
-        'arg.1_scoreboard' => espn('https://site.api.espn.com/apis/site/v2/sports/soccer/arg.1/scoreboard'),
-        'arg.copa_scoreboard' => espn('https://site.api.espn.com/apis/site/v2/sports/soccer/arg.copa/scoreboard'),
-        'arg.2_scoreboard' => espn('https://site.api.espn.com/apis/site/v2/sports/soccer/arg.2/scoreboard'),
-    ];
-    echo json_encode(array_map(fn($d) => [
-        'ok' => !empty($d['events']),
-        'league' => $d['leagues'][0]['name'] ?? null,
-        'events' => count($d['events'] ?? []),
-    ], $tests), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
-
+    $entries = $d['children'][0]['standings']['entries'] ?? [];
+    $sample = $entries[0] ?? null;
+    echo json_encode(['groups'=>count($d['children']??[]),'teams_group1'=>count($entries),'sample_team'=>$sample['team']['displayName']??null,'stat_names'=>array_column($sample['stats']??[],'name')], JSON_PRETTY_PRINT|JSON_UNESCAPED_UNICODE);
+} elseif ($action === 'scoreboard') {
+    $slug = $_GET['slug'] ?? 'arg.1';
+    $d = espn("https://site.api.espn.com/apis/site/v2/sports/soccer/{$slug}/scoreboard");
+    echo json_encode(['events'=>count($d['events']??[]),'sample'=>isset($d['events'][0])?['name'=>$d['events'][0]['name'],'state'=>$d['events'][0]['competitions'][0]['status']['type']['state']??'?','score'=>($d['events'][0]['competitions'][0]['competitors'][0]['score']??'?').'-'.($d['events'][0]['competitions'][0]['competitors'][1]['score']??'?')]:null], JSON_PRETTY_PRINT|JSON_UNESCAPED_UNICODE);
+} elseif ($action === 'leaders') {
+    $d = espn('https://site.api.espn.com/apis/site/v2/sports/soccer/arg.1/leaders');
+    echo json_encode(['categories'=>array_column($d['categories']??[],'name'),'sample'=>$d['categories'][0]['leaders'][0]??null], JSON_PRETTY_PRINT|JSON_UNESCAPED_UNICODE);
 } else {
-    echo json_encode([
-        'endpoints' => [
-            'scoreboard'    => '?action=scoreboard',
-            'standings'     => '?action=standings',
-            'otras_ligas'   => '?action=leagues',
-        ]
-    ], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+    echo json_encode(['tests'=>['standings'=>'?action=standings','scoreboard'=>'?action=scoreboard','copa'=>'?action=scoreboard&slug=arg.copa','primera'=>'?action=scoreboard&slug=arg.2','leaders'=>'?action=leaders']]);
 }
