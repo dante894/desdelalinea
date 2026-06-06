@@ -9,10 +9,10 @@ class EuropaController
 {
     public function index(): void
     {
-        $db      = Database::getInstance();
-        $api     = new FootballApiRapid();
-        $tab     = $_GET['tab']    ?? 'tabla';
-        $liga    = $_GET['liga']   ?? 'premier';
+        $db   = Database::getInstance();
+        $api  = new FootballApiRapid();
+        $tab  = $_GET['tab']  ?? 'tabla';
+        $liga = $_GET['liga'] ?? 'premier';
 
         // Validar liga
         if (!isset($api->leagues[$liga]) || $liga === 'argentina') {
@@ -20,8 +20,23 @@ class EuropaController
         }
         $lg = $api->leagues[$liga];
 
-        // Noticias europeas
-        $news = $db->query("SELECT * FROM news WHERE source_name IN ('BBC Sport','BBC Fútbol','Sky Sports','ESPN Fútbol') ORDER BY scraped_at DESC LIMIT 8")->fetchAll(\PDO::FETCH_ASSOC);
+        // Noticias europeas: categoría 'Europa' + fuentes conocidas
+        $news = $db->query("
+            SELECT * FROM news
+            WHERE category = 'Europa'
+               OR source_name IN (
+                   'Marca Fútbol','Marca Champions','AS Fútbol',
+                   'Mundo Deportivo','BBC Fútbol','Sky Sports',
+                   'Fútbol Argentino – Champions League'
+               )
+               OR title LIKE '%Champions%'
+               OR title LIKE '%Premier%'
+               OR title LIKE '%La Liga%'
+               OR title LIKE '%Serie A%'
+               OR title LIKE '%Bundesliga%'
+            ORDER BY scraped_at DESC
+            LIMIT 12
+        ")->fetchAll(\PDO::FETCH_ASSOC);
 
         $standings  = [];
         $recent     = [];
