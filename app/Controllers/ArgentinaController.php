@@ -43,18 +43,18 @@ class ArgentinaController
         $live       = [];
 
         if ($tab === 'tabla' || $tab === 'todo') {
-            $standings = $api->getStandings($lg['id'], $lg['season']);
+            $standings = $api->getStandings($lg['id']);
         }
         if ($tab === 'resultados') {
-            $recent = $api->getMatches($lg['id'], $lg['season'], 'FT', 10);
+            $recent = $api->getMatches($lg['id']);
             $live   = $api->getLiveMatches($lg['id']);
         }
         if ($tab === 'proximos') {
-            $upcoming = $api->getNextMatches($lg['id'], $lg['season'], 10);
+            $upcoming = $api->getNextMatches($lg['id']);
         }
         if ($tab === 'jugadores') {
-            $topScorers = $api->getTopScorers($lg['id'], $lg['season']);
-            $topAssists = $api->getTopAssists($lg['id'], $lg['season']);
+            $topScorers = $api->getTopScorers($lg['id']);
+            $topAssists = $api->getTopAssists($lg['id']);
         }
 
         $argLeagues = $api->argLeagues;
