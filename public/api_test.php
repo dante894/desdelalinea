@@ -1,67 +1,64 @@
 <?php
 /**
- * Diagnóstico apifootball.com
- * Acceder: https://desdelalinea.onrender.com/api_test.php
+ * Diagnóstico FotMob API — desdelalinea
+ * https://desdelalinea.onrender.com/api_test.php?action=league&id=112
  * BORRAR DESPUÉS DE DIAGNOSTICAR.
  */
 header('Content-Type: application/json; charset=utf-8');
 
-$key  = '2aae56c367a376f78bb3048cad2c33007a0d0c03d5fe7eac98b6a75f8ab8e417';
-$base = 'https://apiv3.apifootball.com';
-
-function apiFetch(string $url): array {
+function fotmob(string $endpoint): array {
+    $url = 'https://www.fotmob.com/api' . $endpoint;
     $ctx = stream_context_create([
-        'http' => ['timeout' => 15, 'user_agent' => 'DesdeLaLinea/1.0'],
-        'ssl'  => ['verify_peer' => false],
+        'http' => [
+            'timeout'    => 15,
+            'user_agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120.0.0.0 Safari/537.36',
+            'header'     => "Accept: application/json\r\nReferer: https://www.fotmob.com/\r\n",
+        ],
+        'ssl' => ['verify_peer' => false],
     ]);
     $resp = @file_get_contents($url, false, $ctx);
-    if (!$resp) return ['error' => error_get_last()['message'] ?? 'no response'];
+    if (!$resp) return ['error' => error_get_last()['message'] ?? 'no response', 'url' => $url];
     $data = json_decode($resp, true);
     return $data ?? ['error' => 'invalid json'];
 }
 
-$action = $_GET['action'] ?? 'status';
+$action = $_GET['action'] ?? 'info';
+$id     = (int)($_GET['id'] ?? 112);
 
-if ($action === 'leagues_arg') {
-    // Buscar country_id de Argentina primero
-    $countries = apiFetch("$base/?action=get_countries&APIkey=$key");
-    $argId = null;
-    foreach ((array)$countries as $c) {
-        if (stripos($c['country_name'] ?? '', 'argentina') !== false) {
-            $argId = $c['country_id'];
-            break;
-        }
-    }
-    $leagues = $argId ? apiFetch("$base/?action=get_leagues&country_id=$argId&APIkey=$key") : [];
+if ($action === 'league') {
+    $data = fotmob("/leagues?id={$id}&cacheMaxAge=10800");
+    // Mostrar solo estructura, no todo el JSON gigante
     echo json_encode([
-        'argentina_country_id' => $argId,
-        'leagues' => array_map(fn($l) => [
-            'id'   => $l['league_id'],
-            'name' => $l['league_name'],
-            'season' => $l['league_season'],
-        ], (array)$leagues)
+        'league_name'     => $data['details']['name'] ?? null,
+        'standings_keys'  => isset($data['table'])   ? array_keys($data['table'])   : null,
+        'matches_keys'    => isset($data['matches']) ? array_keys($data['matches']) : null,
+        'first_match'     => $data['matches']['allMatches'][0] ?? null,
+        'standings_sample'=> $data['table']['data']['table'][0]['tableData']['all'][0]
+                          ?? $data['table']['data']['table'][0]['tableRows'][0]
+                          ?? null,
+        'raw_table_keys'  => isset($data['table']['data']['table'][0])
+                          ? array_keys($data['table']['data']['table'][0])
+                          : null,
     ], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
 
-} elseif ($action === 'standings') {
-    $lid = $_GET['lid'] ?? 44;
-    $data = apiFetch("$base/?action=get_standings&league_id=$lid&APIkey=$key");
-    $sample = is_array($data) ? array_slice($data, 0, 3) : $data;
-    echo json_encode(['sample_3_rows' => $sample], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
-
-} elseif ($action === 'events') {
-    $lid  = $_GET['lid'] ?? 44;
-    $from = date('Y-m-d', strtotime('-30 days'));
-    $to   = date('Y-m-d', strtotime('+30 days'));
-    $data = apiFetch("$base/?action=get_events&from=$from&to=$to&league_id=$lid&APIkey=$key");
-    $sample = is_array($data) ? array_slice(array_values($data), 0, 2) : $data;
-    echo json_encode(['sample_2_events' => $sample], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+} elseif ($action === 'scorers') {
+    $data = fotmob("/leagueseasondeepstats?id={$id}&type=topscorers");
+    echo json_encode([
+        'keys'   => array_keys($data),
+        'sample' => $data['stats']['players'][0] ?? null,
+    ], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
 
 } else {
     echo json_encode([
-        'endpoints' => [
-            'ligas_argentina' => '?action=leagues_arg',
-            'tabla_liga44'    => '?action=standings&lid=44',
-            'partidos_liga44' => '?action=events&lid=44',
+        'uso' => [
+            'datos_liga'    => "?action=league&id=112",
+            'goleadores'    => "?action=scorers&id=112",
+        ],
+        'ids_arg' => [
+            'liga_profesional' => 112,
+            'copa_argentina'   => 359,
+            'primera_nacional' => 7442,
+            'copa_liga'        => 1341,
         ]
     ], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
 }
