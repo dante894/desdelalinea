@@ -23,9 +23,9 @@ class FootballApiRapid
 
     // Ligas argentinas agrupadas para la vista
     public array $argLeagues = [
-        'argentina'        => ['id' => 128, 'name' => 'Liga Profesional', 'flag' => '🇦🇷', 'season' => 2024, 'has_standings' => true],
-        'copa_argentina'   => ['id' => 130, 'name' => 'Copa Argentina',   'flag' => '🏆',  'season' => 2024, 'has_standings' => false],
-        'primera_nacional' => ['id' => 131, 'name' => 'Primera Nacional', 'flag' => '🥈',  'season' => 2024, 'has_standings' => true],
+        'argentina'        => ['id' => 128, 'name' => 'Liga Profesional', 'flag' => '🇦🇷', 'season' => 2025, 'has_standings' => true],
+        'copa_argentina'   => ['id' => 130, 'name' => 'Copa Argentina',   'flag' => '🏆',  'season' => 2025, 'has_standings' => false],
+        'primera_nacional' => ['id' => 131, 'name' => 'Primera Nacional', 'flag' => '🥈',  'season' => 2025, 'has_standings' => true],
         'copa_liga'        => ['id' => 529, 'name' => 'Copa de la Liga',  'flag' => '⚽',  'season' => 2025, 'has_standings' => false],
     ];
 
@@ -45,6 +45,13 @@ class FootballApiRapid
         $resp = @file_get_contents($this->base . $endpoint, false, $ctx);
         if (!$resp) return null;
         $data = json_decode($resp, true);
+        // Si la API devuelve error, loguearlo
+        if (isset($data['errors']) && !empty($data['errors'])) {
+            error_log('[FootballAPI] Error en ' . $endpoint . ': ' . json_encode($data['errors']));
+        }
+        if (isset($data['message'])) {
+            error_log('[FootballAPI] Message: ' . $data['message']);
+        }
         return $data['response'] ?? null;
     }
 
