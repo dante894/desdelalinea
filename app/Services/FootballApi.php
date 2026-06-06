@@ -4,7 +4,7 @@ namespace App\Services;
 
 class FootballApi
 {
-    private string $apiKey = '5d5c0226c2e5448580d72d6dd2cca1fd';
+    private string $apiKey = '2854b2e9a847aec77765f23b9bcba33c';
     private string $base   = 'https://api.football-data.org/v4';
 
     // ID del Mundial 2026 en football-data.org
