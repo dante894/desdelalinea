@@ -152,7 +152,7 @@ footer strong{color:#00c853}
 
   <!-- TABLA -->
   <div id="tab-tabla" class="tab-content <?= $tab==='tabla'?'active':'' ?>">
-    <p class="section-hdr"><?= $lg['flag'] ?> Tabla de posiciones — <?= htmlspecialchars($lg['name']) ?> <?= $lg['season'] ?></p>
+    <p class="section-hdr"><?= $lg['flag'] ?> Tabla de posiciones — <?= htmlspecialchars($lg['name']) ?></p>
     <?php if (!$lg['has_standings']): ?>
     <div class="empty">📋 <?= htmlspecialchars($lg['name']) ?> es una copa por eliminación directa — no tiene tabla de posiciones.<br><small>Mirá los partidos en "Resultados" o "Próximos".</small></div>
     <?php elseif (!empty($standings)): ?>
@@ -160,38 +160,34 @@ footer strong{color:#00c853}
       <table class="standings-table">
         <thead><tr>
           <th>#</th><th>Equipo</th><th>PJ</th><th>G</th><th>E</th><th>P</th>
-          <th>GF</th><th>GC</th><th>DG</th><th>Pts</th><th>Forma</th>
+          <th>GF</th><th>GC</th><th>DG</th><th>Pts</th>
         </tr></thead>
         <tbody>
         <?php foreach ($standings as $row):
-          $pos = $row['rank'];
-          $posClass = $pos <= 4 ? 'pos-q1' : ($pos >= count($standings)-2 ? 'pos-rel' : 'pos');
+          $pos      = (int)($row['standing_place'] ?? 0);
+          $total    = count($standings);
+          $posClass = $pos <= 4 ? 'pos-q1' : ($pos >= $total - 2 ? 'pos-rel' : 'pos');
+          $gf = (int)($row['standing_F'] ?? 0);
+          $gc = (int)($row['standing_A'] ?? 0);
         ?>
         <tr>
           <td class="<?= $posClass ?>"><?= $pos ?></td>
           <td>
             <div class="team-cell">
-              <?php if ($row['team']['logo'] ?? false): ?>
-              <img class="team-logo" src="<?= htmlspecialchars($row['team']['logo']) ?>" alt="">
+              <?php if ($row['team_badge'] ?? false): ?>
+              <img class="team-logo" src="<?= htmlspecialchars($row['team_badge']) ?>" alt="" onerror="this.style.display='none'">
               <?php endif; ?>
-              <?= htmlspecialchars($row['team']['name']) ?>
+              <?= htmlspecialchars($row['team_name'] ?? '') ?>
             </div>
           </td>
-          <td><?= $row['all']['played'] ?></td>
-          <td><?= $row['all']['win'] ?></td>
-          <td><?= $row['all']['draw'] ?></td>
-          <td><?= $row['all']['lose'] ?></td>
-          <td><?= $row['all']['goals']['for'] ?></td>
-          <td><?= $row['all']['goals']['against'] ?></td>
-          <td><?= $row['goalsDiff'] ?></td>
-          <td class="pts"><?= $row['points'] ?></td>
-          <td>
-            <?php if ($row['form'] ?? false): ?>
-            <?php foreach (str_split($row['form']) as $f): ?>
-            <span class="form-badge form-<?= $f ?>"><?= $f ?></span>
-            <?php endforeach; ?>
-            <?php endif; ?>
-          </td>
+          <td><?= $row['standing_PL']  ?? 0 ?></td>
+          <td><?= $row['standing_W']   ?? 0 ?></td>
+          <td><?= $row['standing_D']   ?? 0 ?></td>
+          <td><?= $row['standing_L']   ?? 0 ?></td>
+          <td><?= $gf ?></td>
+          <td><?= $gc ?></td>
+          <td><?= $gf - $gc ?></td>
+          <td class="pts"><?= $row['standing_PTS'] ?? 0 ?></td>
         </tr>
         <?php endforeach; ?>
         </tbody>
@@ -213,31 +209,48 @@ footer strong{color:#00c853}
     <p class="section-hdr" style="margin-bottom:1rem;color:#e53935">⚡ En vivo</p>
     <div class="matches-list" style="margin-bottom:2rem">
       <?php foreach ($live as $m): ?>
-      <?php include __DIR__ . '/partials/match_row.php'; ?>
+      <div class="match-card live">
+        <div class="team-home">
+          <?php if ($m['team_home_badge'] ?? false): ?>
+          <img class="team-logo-sm" src="<?= htmlspecialchars($m['team_home_badge']) ?>" alt="" onerror="this.style.display='none'">
+          <?php endif; ?>
+          <span class="team-name"><?= htmlspecialchars($m['match_hometeam_name'] ?? '') ?></span>
+        </div>
+        <div class="score-box">
+          <div class="score-num"><?= $m['match_hometeam_score'] ?? '0' ?> - <?= $m['match_awayteam_score'] ?? '0' ?></div>
+          <div class="match-status status-live"><?= htmlspecialchars($m['match_status'] ?? '') ?></div>
+        </div>
+        <div class="team-away">
+          <?php if ($m['team_away_badge'] ?? false): ?>
+          <img class="team-logo-sm" src="<?= htmlspecialchars($m['team_away_badge']) ?>" alt="" onerror="this.style.display='none'">
+          <?php endif; ?>
+          <span class="team-name"><?= htmlspecialchars($m['match_awayteam_name'] ?? '') ?></span>
+        </div>
+      </div>
       <?php endforeach; ?>
     </div>
     <?php endif; ?>
     <p class="section-hdr">Últimos resultados — <?= htmlspecialchars($lg['name']) ?></p>
     <?php if (!empty($recent)): ?>
     <div class="matches-list">
-      <?php foreach (array_reverse($recent) as $m): ?>
+      <?php foreach ($recent as $m): ?>
       <div class="match-card">
         <div class="team-home">
-          <?php if ($m['teams']['home']['logo'] ?? false): ?>
-          <img class="team-logo-sm" src="<?= htmlspecialchars($m['teams']['home']['logo']) ?>" alt="">
+          <?php if ($m['team_home_badge'] ?? false): ?>
+          <img class="team-logo-sm" src="<?= htmlspecialchars($m['team_home_badge']) ?>" alt="" onerror="this.style.display='none'">
           <?php endif; ?>
-          <span class="team-name"><?= htmlspecialchars($m['teams']['home']['name']) ?></span>
+          <span class="team-name"><?= htmlspecialchars($m['match_hometeam_name'] ?? '') ?></span>
         </div>
         <div class="score-box">
-          <div class="score-num"><?= $m['goals']['home'] ?? '—' ?> - <?= $m['goals']['away'] ?? '—' ?></div>
+          <div class="score-num"><?= $m['match_hometeam_score'] ?? '—' ?> - <?= $m['match_awayteam_score'] ?? '—' ?></div>
           <div class="match-status status-ft">Final</div>
-          <div class="match-round"><?= htmlspecialchars($m['league']['round'] ?? '') ?></div>
+          <div class="match-round"><?= htmlspecialchars($m['league_round'] ?? '') ?></div>
         </div>
         <div class="team-away">
-          <?php if ($m['teams']['away']['logo'] ?? false): ?>
-          <img class="team-logo-sm" src="<?= htmlspecialchars($m['teams']['away']['logo']) ?>" alt="">
+          <?php if ($m['team_away_badge'] ?? false): ?>
+          <img class="team-logo-sm" src="<?= htmlspecialchars($m['team_away_badge']) ?>" alt="" onerror="this.style.display='none'">
           <?php endif; ?>
-          <span class="team-name"><?= htmlspecialchars($m['teams']['away']['name']) ?></span>
+          <span class="team-name"><?= htmlspecialchars($m['match_awayteam_name'] ?? '') ?></span>
         </div>
       </div>
       <?php endforeach; ?>
@@ -253,21 +266,21 @@ footer strong{color:#00c853}
       <?php foreach ($upcoming as $m): ?>
       <div class="match-card">
         <div class="team-home">
-          <?php if ($m['teams']['home']['logo'] ?? false): ?>
-          <img class="team-logo-sm" src="<?= htmlspecialchars($m['teams']['home']['logo']) ?>" alt="">
+          <?php if ($m['team_home_badge'] ?? false): ?>
+          <img class="team-logo-sm" src="<?= htmlspecialchars($m['team_home_badge']) ?>" alt="" onerror="this.style.display='none'">
           <?php endif; ?>
-          <span class="team-name"><?= htmlspecialchars($m['teams']['home']['name']) ?></span>
+          <span class="team-name"><?= htmlspecialchars($m['match_hometeam_name'] ?? '') ?></span>
         </div>
         <div class="score-box">
           <div class="score-vs">VS</div>
-          <div class="match-status status-ns"><?= date('d/m H:i', strtotime($m['fixture']['date'])) ?></div>
-          <div class="match-round"><?= htmlspecialchars($m['league']['round'] ?? '') ?></div>
+          <div class="match-status status-ns"><?= htmlspecialchars(($m['match_date'] ?? '') . ' ' . ($m['match_time'] ?? '')) ?></div>
+          <div class="match-round"><?= htmlspecialchars($m['league_round'] ?? '') ?></div>
         </div>
         <div class="team-away">
-          <?php if ($m['teams']['away']['logo'] ?? false): ?>
-          <img class="team-logo-sm" src="<?= htmlspecialchars($m['teams']['away']['logo']) ?>" alt="">
+          <?php if ($m['team_away_badge'] ?? false): ?>
+          <img class="team-logo-sm" src="<?= htmlspecialchars($m['team_away_badge']) ?>" alt="" onerror="this.style.display='none'">
           <?php endif; ?>
-          <span class="team-name"><?= htmlspecialchars($m['teams']['away']['name']) ?></span>
+          <span class="team-name"><?= htmlspecialchars($m['match_awayteam_name'] ?? '') ?></span>
         </div>
       </div>
       <?php endforeach; ?>
@@ -282,27 +295,20 @@ footer strong{color:#00c853}
         <p class="section-hdr">⚽ Goleadores</p>
         <?php if (!empty($topScorers)): ?>
         <div class="players-grid" style="grid-template-columns:1fr">
-          <?php foreach ($topScorers as $i => $p):
-            $pl = $p['player']; $st = $p['statistics'][0] ?? [];
-          ?>
+          <?php foreach ($topScorers as $i => $p): ?>
           <div class="player-card" style="display:flex;align-items:center;gap:.75rem;padding:.75rem">
             <span class="rank-num"><?= $i+1 ?></span>
-            <?php if ($pl['photo'] ?? false): ?>
-            <img src="<?= htmlspecialchars($pl['photo']) ?>" style="width:44px;height:44px;border-radius:50%;object-fit:cover;object-position:top;background:var(--dark2)" alt="">
+            <?php if ($p['player_image'] ?? false): ?>
+            <img src="<?= htmlspecialchars($p['player_image']) ?>" style="width:44px;height:44px;border-radius:50%;object-fit:cover;object-position:top;background:var(--dark2)" alt="" onerror="this.style.display='none'">
             <?php else: ?>
             <div style="width:44px;height:44px;border-radius:50%;background:var(--dark2);display:flex;align-items:center;justify-content:center;font-size:1.2rem">👤</div>
             <?php endif; ?>
             <div style="flex:1">
-              <div class="player-name"><?= htmlspecialchars($pl['name']) ?></div>
-              <div class="player-club">
-                <?php if ($st['team']['logo'] ?? false): ?>
-                <img src="<?= htmlspecialchars($st['team']['logo']) ?>" alt="" style="width:14px;height:14px;object-fit:contain">
-                <?php endif; ?>
-                <?= htmlspecialchars($st['team']['name'] ?? '') ?>
-              </div>
+              <div class="player-name"><?= htmlspecialchars($p['player_name'] ?? '') ?></div>
+              <div class="player-club"><?= htmlspecialchars($p['team_name'] ?? '') ?></div>
             </div>
             <div style="text-align:center">
-              <div class="stat-num"><?= $st['goals']['total'] ?? 0 ?></div>
+              <div class="stat-num"><?= $p['player_goals'] ?? 0 ?></div>
               <div class="stat-lbl">Goles</div>
             </div>
           </div>
@@ -314,27 +320,20 @@ footer strong{color:#00c853}
         <p class="section-hdr">🎯 Asistencias</p>
         <?php if (!empty($topAssists)): ?>
         <div class="players-grid" style="grid-template-columns:1fr">
-          <?php foreach ($topAssists as $i => $p):
-            $pl = $p['player']; $st = $p['statistics'][0] ?? [];
-          ?>
+          <?php foreach ($topAssists as $i => $p): ?>
           <div class="player-card" style="display:flex;align-items:center;gap:.75rem;padding:.75rem">
             <span class="rank-num" style="background:var(--cel)"><?= $i+1 ?></span>
-            <?php if ($pl['photo'] ?? false): ?>
-            <img src="<?= htmlspecialchars($pl['photo']) ?>" style="width:44px;height:44px;border-radius:50%;object-fit:cover;object-position:top;background:var(--dark2)" alt="">
+            <?php if ($p['player_image'] ?? false): ?>
+            <img src="<?= htmlspecialchars($p['player_image']) ?>" style="width:44px;height:44px;border-radius:50%;object-fit:cover;object-position:top;background:var(--dark2)" alt="" onerror="this.style.display='none'">
             <?php else: ?>
             <div style="width:44px;height:44px;border-radius:50%;background:var(--dark2);display:flex;align-items:center;justify-content:center;font-size:1.2rem">👤</div>
             <?php endif; ?>
             <div style="flex:1">
-              <div class="player-name"><?= htmlspecialchars($pl['name']) ?></div>
-              <div class="player-club">
-                <?php if ($st['team']['logo'] ?? false): ?>
-                <img src="<?= htmlspecialchars($st['team']['logo']) ?>" alt="" style="width:14px;height:14px;object-fit:contain">
-                <?php endif; ?>
-                <?= htmlspecialchars($st['team']['name'] ?? '') ?>
-              </div>
+              <div class="player-name"><?= htmlspecialchars($p['player_name'] ?? '') ?></div>
+              <div class="player-club"><?= htmlspecialchars($p['team_name'] ?? '') ?></div>
             </div>
             <div style="text-align:center">
-              <div class="stat-num" style="color:var(--cel)"><?= $st['goals']['assists'] ?? 0 ?></div>
+              <div class="stat-num" style="color:var(--cel)"><?= $p['player_assists'] ?? 0 ?></div>
               <div class="stat-lbl">Asist.</div>
             </div>
           </div>
