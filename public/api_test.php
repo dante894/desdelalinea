@@ -1,64 +1,56 @@
 <?php
-/**
- * Diagnóstico FotMob API — desdelalinea
- * https://desdelalinea.onrender.com/api_test.php?action=league&id=112
- * BORRAR DESPUÉS DE DIAGNOSTICAR.
- */
 header('Content-Type: application/json; charset=utf-8');
 
-function fotmob(string $endpoint): array {
-    $url = 'https://www.fotmob.com/api' . $endpoint;
+function fetch(string $url, array $headers = []): array {
     $ctx = stream_context_create([
         'http' => [
-            'timeout'    => 15,
-            'user_agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120.0.0.0 Safari/537.36',
-            'header'     => "Accept: application/json\r\nReferer: https://www.fotmob.com/\r\n",
+            'timeout'         => 15,
+            'user_agent'      => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120.0.0.0 Safari/537.36',
+            'header'          => implode("\r\n", $headers),
+            'ignore_errors'   => true,  // ← captura respuesta aunque sea 4xx/5xx
         ],
         'ssl' => ['verify_peer' => false],
     ]);
     $resp = @file_get_contents($url, false, $ctx);
-    if (!$resp) return ['error' => error_get_last()['message'] ?? 'no response', 'url' => $url];
-    $data = json_decode($resp, true);
-    return $data ?? ['error' => 'invalid json'];
+    $httpCode = 0;
+    if (isset($http_response_header)) {
+        preg_match('/HTTP\/\S+ (\d+)/', $http_response_header[0] ?? '', $m);
+        $httpCode = (int)($m[1] ?? 0);
+    }
+    return [
+        'http_code' => $httpCode,
+        'length'    => $resp ? strlen($resp) : 0,
+        'preview'   => $resp ? substr($resp, 0, 300) : null,
+        'error'     => $resp ? null : (error_get_last()['message'] ?? 'no response'),
+    ];
 }
 
-$action = $_GET['action'] ?? 'info';
-$id     = (int)($_GET['id'] ?? 112);
+$results = [];
 
-if ($action === 'league') {
-    $data = fotmob("/leagues?id={$id}&cacheMaxAge=10800");
-    // Mostrar solo estructura, no todo el JSON gigante
-    echo json_encode([
-        'league_name'     => $data['details']['name'] ?? null,
-        'standings_keys'  => isset($data['table'])   ? array_keys($data['table'])   : null,
-        'matches_keys'    => isset($data['matches']) ? array_keys($data['matches']) : null,
-        'first_match'     => $data['matches']['allMatches'][0] ?? null,
-        'standings_sample'=> $data['table']['data']['table'][0]['tableData']['all'][0]
-                          ?? $data['table']['data']['table'][0]['tableRows'][0]
-                          ?? null,
-        'raw_table_keys'  => isset($data['table']['data']['table'][0])
-                          ? array_keys($data['table']['data']['table'][0])
-                          : null,
-    ], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+// Test 1: FotMob sin headers extra
+$results['fotmob_plain'] = fetch('https://www.fotmob.com/api/leagues?id=112&cacheMaxAge=10800');
 
-} elseif ($action === 'scorers') {
-    $data = fotmob("/leagueseasondeepstats?id={$id}&type=topscorers");
-    echo json_encode([
-        'keys'   => array_keys($data),
-        'sample' => $data['stats']['players'][0] ?? null,
-    ], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+// Test 2: FotMob con headers completos de browser
+$results['fotmob_full_headers'] = fetch(
+    'https://www.fotmob.com/api/leagues?id=112&cacheMaxAge=10800',
+    [
+        'Accept: application/json, text/plain, */*',
+        'Accept-Language: es-AR,es;q=0.9,en;q=0.8',
+        'Referer: https://www.fotmob.com/es/leagues/112/overview/liga-profesional',
+        'Origin: https://www.fotmob.com',
+        'sec-fetch-dest: empty',
+        'sec-fetch-mode: cors',
+        'sec-fetch-site: same-origin',
+    ]
+);
 
-} else {
-    echo json_encode([
-        'uso' => [
-            'datos_liga'    => "?action=league&id=112",
-            'goleadores'    => "?action=scorers&id=112",
-        ],
-        'ids_arg' => [
-            'liga_profesional' => 112,
-            'copa_argentina'   => 359,
-            'primera_nacional' => 7442,
-            'copa_liga'        => 1341,
-        ]
-    ], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
-}
+// Test 3: ESPN API pública (no requiere key)
+$results['espn_arg'] = fetch('https://site.api.espn.com/apis/site/v2/sports/soccer/arg.1/scoreboard');
+
+// Test 4: ESPN standings
+$results['espn_standings'] = fetch('https://site.api.espn.com/apis/v2/sports/soccer/arg.1/standings');
+
+// Test 5: SofaScore (otra opción)
+$results['sofascore_arg'] = fetch('https://api.sofascore.com/api/v1/unique-tournament/406/season/latest/standings/total');
+
+echo json_encode($results, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
