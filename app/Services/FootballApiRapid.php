@@ -16,20 +16,26 @@ class FootballApiRapid
 
     // Liga Profesional Argentina temporadas históricas
     public array $historicalSeasons = [
+        '2026' => 'Temporada 2026',
         '2025' => 'Temporada 2025',
         '2024' => 'Torneo Clausura 2024 / Apertura 2024',
         '2023' => 'Torneo Clausura 2023 / Apertura 2023',
         '2022' => 'Torneo Clausura 2022 / Apertura 2022',
         '2021' => 'Torneo Clausura 2021 / Apertura 2021',
+        '2020' => 'Torneo 2019/2020 (COVID)',
+        '2019' => 'Torneo Superliga 2018/2019',
     ];
 
     // ESPN league slugs — Argentina
     public array $argLeagues = [
         'argentina'        => ['slug' => 'arg.1',    'name' => 'Liga Profesional',  'flag' => '🇦🇷', 'has_standings' => true],
-        'copa_argentina'   => ['slug' => 'arg.copa', 'name' => 'Copa Argentina',    'flag' => '🏆',  'has_standings' => false],
+        'reserva'          => ['slug' => 'arg.reserva', 'name' => 'Reserva AFA',    'flag' => '🟡',  'has_standings' => true],
         'primera_nacional' => ['slug' => 'arg.2',    'name' => 'Primera Nacional',  'flag' => '🥈',  'has_standings' => true],
+        'copa_argentina'   => ['slug' => 'arg.copa', 'name' => 'Copa Argentina',    'flag' => '🏆',  'has_standings' => false],
+        'supercopa'        => ['slug' => 'arg.supercopa', 'name' => 'Supercopa Argentina', 'flag' => '⭐', 'has_standings' => false],
         'copa_libertadores'=> ['slug' => 'conmebol.libertadores', 'name' => 'Copa Libertadores', 'flag' => '🌎', 'has_standings' => true],
         'copa_sudamericana'=> ['slug' => 'conmebol.sudamericana', 'name' => 'Copa Sudamericana', 'flag' => '🌍', 'has_standings' => true],
+        'recopa'           => ['slug' => 'conmebol.recopa', 'name' => 'Recopa Sudamericana', 'flag' => '♻️', 'has_standings' => false],
     ];
 
     // Ligas europeas y mundiales

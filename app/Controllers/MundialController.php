@@ -13,11 +13,9 @@ class MundialController
         $db      = Database::getInstance();
         $apiEspn = new FootballApiRapid();
 
-        // También intentamos football-data.org como fallback para grupos
         $apiFd = null;
         try { $apiFd = new FootballApi(); } catch (\Throwable $e) {}
 
-        // Noticias del mundial
         $news = $db->query(
             "SELECT * FROM news
              WHERE category = 'Mundial 2026'
@@ -25,30 +23,27 @@ class MundialController
                 OR title LIKE '%World Cup%'
                 OR title LIKE '%Copa del Mundo%'
                 OR title LIKE '%FIFA%'
-             ORDER BY scraped_at DESC LIMIT 20"
+             ORDER BY scraped_at DESC LIMIT 24"
         )->fetchAll(\PDO::FETCH_ASSOC);
 
         $tab = $_GET['tab'] ?? 'partidos';
 
-        // Datos vía ESPN (sin key)
-        $live     = $apiEspn->getMundialLive();
-        $recent   = [];
-        $upcoming = [];
-        $standings = [];
+        $live       = $apiEspn->getMundialLive();
+        $recent     = [];
+        $upcoming   = [];
+        $standings  = [];
         $topScorers = [];
 
         if ($tab === 'partidos' || $tab === 'resultados') {
-            $recent = $apiEspn->getMundialMatches(20);
+            $recent = $apiEspn->getMundialMatches(30);
         }
         if ($tab === 'proximos') {
-            $upcoming = $apiEspn->getMundialUpcoming(20);
+            $upcoming = $apiEspn->getMundialUpcoming(30);
         }
         if ($tab === 'tabla') {
-            // Intentamos ESPN primero, luego football-data como fallback
             $standings = $apiEspn->getMundialStandings();
             if (empty($standings) && $apiFd) {
                 $standingsFd = $apiFd->getStandings();
-                // Normalizar formato de football-data
                 foreach ($standingsFd as $group) {
                     $groupRows = [];
                     $groupName = $group['group'] ?? 'Grupo';
@@ -56,6 +51,7 @@ class MundialController
                         $groupRows[] = [
                             'rank'   => $row['position'],
                             'name'   => $row['team']['name'] ?? '—',
+                            'abbr'   => $row['team']['tla'] ?? '',
                             'logo'   => $row['team']['crest'] ?? null,
                             'played' => $row['playedGames'] ?? 0,
                             'wins'   => $row['won'] ?? 0,
@@ -65,7 +61,6 @@ class MundialController
                             'gc'     => $row['goalsAgainst'] ?? 0,
                             'gd'     => $row['goalDifference'] ?? 0,
                             'points' => $row['points'] ?? 0,
-                            'form'   => '',
                             'group'  => $groupName,
                         ];
                     }
@@ -77,7 +72,8 @@ class MundialController
             $topScorers = $apiEspn->getMundialTopScorers();
         }
 
-        // Grupos agrupados para vista de grupos
+        // Siempre tener live para el badge
+        // Agrupar standings por grupo
         $standingsByGroup = [];
         foreach ($standings as $row) {
             $standingsByGroup[$row['group'] ?? 'General'][] = $row;

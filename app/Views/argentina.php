@@ -7,31 +7,35 @@
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{--cel:#74b9ff;--cel2:#0984e3;--dark:#08101a;--dark2:#0d1829;--card:#0f1e30;--border:#1a3050;--text:#e8f0f8;--muted:#4a7a9f;--gold:#ffd600}
+:root{--cel:#74b9ff;--cel2:#0984e3;--dark:#08101a;--dark2:#0d1829;--card:#0f1e30;--border:#1a3050;--text:#e8f0f8;--muted:#4a7a9f;--gold:#ffd600;--live:#e53935;--green:#00c853}
 body{background:var(--dark);color:var(--text);font-family:'Barlow',sans-serif;min-height:100vh}
-<?php include __DIR__ . '/partials/nav.css.php'; ?>
-nav{display:flex;align-items:center;justify-content:space-between;padding:0 2rem;height:60px;background:rgba(8,16,26,.96);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100}
+nav{display:flex;align-items:center;justify-content:space-between;padding:0 2rem;height:60px;background:rgba(8,16,26,.97);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100}
 .nav-brand{font-family:'Barlow Condensed',sans-serif;font-size:1.6rem;font-weight:900;color:#00c853;text-decoration:none}
 .nav-brand span{color:#fff}
-.nav-links{display:flex;gap:1.5rem;list-style:none}
+.nav-links{display:flex;gap:1.5rem;list-style:none;align-items:center}
 .nav-links a{color:var(--muted);text-decoration:none;font-size:.85rem;font-weight:600;text-transform:uppercase;letter-spacing:.5px;transition:color .2s}
 .nav-links a:hover,.nav-links a.active{color:var(--cel)}
-.container{max-width:1200px;margin:0 auto;padding:0 1.5rem}
+.container{max-width:1280px;margin:0 auto;padding:0 1.5rem}
 .hero{background:linear-gradient(135deg,#08101a,#0d1f3a,#081525);border-bottom:3px solid var(--cel);padding:2.5rem 0;position:relative;overflow:hidden}
 .hero::after{content:'🇦🇷';position:absolute;right:4rem;top:50%;transform:translateY(-50%);font-size:9rem;opacity:.06;pointer-events:none}
 .hero h1{font-family:'Barlow Condensed',sans-serif;font-size:clamp(2.5rem,5vw,4rem);font-weight:900;color:#fff;text-transform:uppercase;letter-spacing:2px}
 .hero h1 span{color:var(--cel)}
 .hero p{color:var(--muted);margin-top:.5rem}
+
+/* LIVE BADGE in hero */
+.hero-live{display:inline-flex;align-items:center;gap:.4rem;background:var(--live);color:#fff;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:.72rem;text-transform:uppercase;letter-spacing:1px;padding:.25rem .65rem;border-radius:3px;margin-left:1rem;vertical-align:middle;animation:blink 1.5s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.5}}
+
 /* LEAGUE SELECTOR */
 .league-selector{display:flex;gap:.6rem;flex-wrap:wrap;margin-top:1.2rem}
-.league-btn{display:flex;align-items:center;gap:.4rem;padding:.45rem 1rem;border-radius:6px;border:1px solid var(--border);background:var(--card);color:var(--muted);text-decoration:none;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.85rem;text-transform:uppercase;letter-spacing:.5px;transition:all .2s}
+.league-btn{display:flex;align-items:center;gap:.4rem;padding:.45rem 1rem;border-radius:6px;border:1px solid var(--border);background:var(--card);color:var(--muted);text-decoration:none;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.82rem;text-transform:uppercase;letter-spacing:.5px;transition:all .2s;position:relative}
 .league-btn:hover{border-color:var(--cel);color:var(--text)}
 .league-btn.active{background:var(--cel2);border-color:var(--cel);color:#fff}
-.league-btn .flag{font-size:1rem}
-.team-home.winner .team-name, .team-away.winner .team-name{color:#fff;font-weight:700}
-.match-card.live{border-color:#e53935;box-shadow:0 0 0 1px #e5393533}
+.league-btn .live-dot{width:6px;height:6px;background:var(--live);border-radius:50%;position:absolute;top:4px;right:4px;animation:blink 1.5s infinite}
+
+/* TABS */
 .tabs{display:flex;gap:0;border-bottom:2px solid var(--border);margin:0}
-.tab{padding:.8rem 1.4rem;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.9rem;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .2s;text-decoration:none}
+.tab{padding:.8rem 1.4rem;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.9rem;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .2s;text-decoration:none}
 .tab:hover{color:var(--text)}
 .tab.active{color:var(--cel);border-bottom-color:var(--cel)}
 .tab-content{display:none;padding:2rem 0}
@@ -54,28 +58,41 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:0 2rem
 .pos-rel{color:#e17055;font-weight:700}
 .pts{font-weight:800;color:var(--cel);font-size:1rem}
 .form-badge{display:inline-block;width:18px;height:18px;border-radius:3px;font-size:.6rem;font-weight:800;line-height:18px;text-align:center;color:#fff}
-.form-W{background:#00b894}
-.form-D{background:#636e72}
-.form-L{background:#d63031}
+.form-W{background:#00b894}.form-D{background:#636e72}.form-L{background:#d63031}
 
 /* MATCHES */
 .matches-list{display:grid;gap:.6rem}
 .match-card{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:.9rem 1.2rem;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:.75rem;transition:border-color .2s}
 .match-card:hover{border-color:var(--cel)}
-.match-card.live{border-color:#e53935;box-shadow:0 0 10px rgba(229,57,53,.15)}
+.match-card.live{border-color:var(--live);box-shadow:0 0 10px rgba(229,57,53,.15)}
 .team-home{display:flex;align-items:center;gap:.6rem}
 .team-away{display:flex;align-items:center;gap:.6rem;flex-direction:row-reverse;text-align:right}
 .team-logo-sm{width:24px;height:24px;object-fit:contain}
 .team-name{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1rem}
+.team-home.winner .team-name,.team-away.winner .team-name{color:#fff;font-weight:800}
 .score-box{text-align:center;min-width:80px}
 .score-num{font-family:'Barlow Condensed',sans-serif;font-size:1.6rem;font-weight:900;color:var(--cel);letter-spacing:3px}
 .score-vs{font-family:'Barlow Condensed',sans-serif;font-size:1.2rem;font-weight:700;color:var(--muted)}
 .match-status{font-size:.7rem;text-transform:uppercase;letter-spacing:.5px;margin-top:.2rem}
-.status-live{color:#e53935;animation:blink 1.5s infinite}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:.4}}
+.status-live{color:var(--live);animation:blink 1.5s infinite}
 .status-ft{color:var(--muted)}
 .status-ns{color:#55efc4}
-.match-round{font-size:.65rem;color:var(--muted)}
+.match-detail{font-size:.65rem;color:var(--muted);margin-top:.15rem}
+
+/* GOAL SCORERS */
+.goals-strip{display:flex;flex-wrap:wrap;gap:.3rem;margin-top:.3rem;justify-content:center}
+.goal-pill{font-size:.62rem;background:rgba(116,185,255,.1);border-radius:3px;padding:.15rem .4rem;color:var(--cel)}
+
+/* HISTORICAL */
+.hist-filters{display:flex;gap:.75rem;flex-wrap:wrap;align-items:center;margin-bottom:1.5rem;padding:.75rem;background:var(--card);border:1px solid var(--border);border-radius:8px}
+.hist-filters label{font-size:.8rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+.hist-select{background:var(--dark2);border:1px solid var(--border);color:var(--text);padding:.4rem .75rem;border-radius:4px;font-family:'Barlow',sans-serif;font-size:.85rem;cursor:pointer}
+.hist-select:focus{outline:none;border-color:var(--cel)}
+.hist-btn{background:var(--cel2);border:none;color:#fff;padding:.4rem 1rem;border-radius:4px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.85rem;text-transform:uppercase;letter-spacing:.5px;cursor:pointer;transition:opacity .2s}
+.hist-btn:hover{opacity:.85}
+.hist-count{font-size:.75rem;color:var(--muted);margin-left:auto}
+.hist-date-grp{margin-bottom:1.5rem}
+.hist-date-label{font-family:'Barlow Condensed',sans-serif;font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);padding:.3rem 0;margin-bottom:.5rem;border-bottom:1px solid var(--border)}
 
 /* PLAYERS */
 .players-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1rem}
@@ -87,7 +104,6 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:0 2rem
 .player-name{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1rem;color:#fff}
 .player-club{display:flex;align-items:center;gap:.4rem;font-size:.75rem;color:var(--muted);margin:.25rem 0}
 .player-club img{width:16px;height:16px;object-fit:contain}
-.player-stats{display:grid;grid-template-columns:1fr 1fr;gap:.4rem;margin-top:.5rem}
 .stat-box{background:var(--dark2);border-radius:4px;padding:.35rem .5rem;text-align:center}
 .stat-num{font-family:'Barlow Condensed',sans-serif;font-size:1.2rem;font-weight:900;color:var(--cel)}
 .stat-lbl{font-size:.6rem;text-transform:uppercase;letter-spacing:.5px;color:var(--muted)}
@@ -104,7 +120,7 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:0 2rem
 .card-body{padding:.9rem;flex:1;display:flex;flex-direction:column;gap:.3rem}
 .card-title{font-family:'Barlow Condensed',sans-serif;font-size:1.05rem;font-weight:700;line-height:1.3;color:#fff;flex:1}
 .card-meta{font-size:.7rem;color:var(--muted)}
-.section-hdr{font-family:'Barlow Condensed',sans-serif;font-size:1.1rem;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--cel);border-left:3px solid var(--cel);padding-left:.6rem;margin-bottom:1rem}
+.section-hdr{font-family:'Barlow Condensed',sans-serif;font-size:1.1rem;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--cel);border-left:3px solid var(--cel);padding-left:.6rem;margin-bottom:1rem;display:flex;align-items:center;gap:.5rem}
 .empty{text-align:center;padding:3rem;color:var(--muted)}
 .pagination{display:flex;gap:.5rem;justify-content:center;padding:2rem 0}
 .page-btn{background:var(--card);border:1px solid var(--border);color:var(--text);padding:.45rem .9rem;border-radius:4px;text-decoration:none;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.9rem;transition:all .2s}
@@ -130,13 +146,19 @@ footer strong{color:#00c853}
 
 <div class="hero">
   <div class="container">
-    <h1>🇦🇷 Fútbol <span>Argentino</span></h1>
-    <p>Ligas, posiciones, fechas y goleadores del fútbol argentino</p>
+    <h1>🇦🇷 Fútbol <span>Argentino</span>
+      <?php if (!empty($allLive)): ?>
+      <span class="hero-live">● <?= count($allLive) ?> EN VIVO</span>
+      <?php endif; ?>
+    </h1>
+    <p>Ligas, posiciones, resultados históricos y goleadores del fútbol argentino</p>
     <div class="league-selector">
       <?php foreach ($argLeagues as $key => $l): ?>
+      <?php $hasLive = array_filter($allLive ?? [], fn($m) => ($m['league_key'] ?? '') === $key); ?>
       <a href="?liga=<?= $key ?>&tab=<?= $tab ?>"
          class="league-btn <?= $leagueKey === $key ? 'active' : '' ?>">
-        <span class="flag"><?= $l['flag'] ?></span><?= htmlspecialchars($l['name']) ?>
+        <span><?= $l['flag'] ?></span><?= htmlspecialchars($l['name']) ?>
+        <?php if (!empty($hasLive)): ?><span class="live-dot"></span><?php endif; ?>
       </a>
       <?php endforeach; ?>
     </div>
@@ -145,11 +167,12 @@ footer strong{color:#00c853}
 
 <div class="container">
   <div class="tabs">
-    <a href="?liga=<?= $leagueKey ?>&tab=tabla"      class="tab <?= $tab==='tabla'?'active':''      ?>">Tabla</a>
-    <a href="?liga=<?= $leagueKey ?>&tab=resultados" class="tab <?= $tab==='resultados'?'active':'' ?>">Resultados</a>
-    <a href="?liga=<?= $leagueKey ?>&tab=proximos"   class="tab <?= $tab==='proximos'?'active':''   ?>">Próximos</a>
-    <a href="?liga=<?= $leagueKey ?>&tab=jugadores"  class="tab <?= $tab==='jugadores'?'active':''  ?>">Jugadores</a>
-    <a href="?liga=<?= $leagueKey ?>&tab=noticias"   class="tab <?= $tab==='noticias'?'active':''   ?>">Noticias</a>
+    <a href="?liga=<?= $leagueKey ?>&tab=tabla"       class="tab <?= $tab==='tabla'?'active':''       ?>">Tabla</a>
+    <a href="?liga=<?= $leagueKey ?>&tab=resultados"  class="tab <?= $tab==='resultados'?'active':''  ?>">Resultados</a>
+    <a href="?liga=<?= $leagueKey ?>&tab=proximos"    class="tab <?= $tab==='proximos'?'active':''    ?>">Próximos</a>
+    <a href="?liga=<?= $leagueKey ?>&tab=historicos"  class="tab <?= $tab==='historicos'?'active':''  ?>">Históricos</a>
+    <a href="?liga=<?= $leagueKey ?>&tab=jugadores"   class="tab <?= $tab==='jugadores'?'active':''   ?>">Jugadores</a>
+    <a href="?liga=<?= $leagueKey ?>&tab=noticias"    class="tab <?= $tab==='noticias'?'active':''    ?>">Noticias</a>
   </div>
 
   <!-- TABLA -->
@@ -162,13 +185,15 @@ footer strong{color:#00c853}
       <table class="standings-table">
         <thead><tr>
           <th>#</th><th>Equipo</th><th>PJ</th><th>G</th><th>E</th><th>P</th>
-          <th>GF</th><th>GC</th><th>DG</th><th>Pts</th>
+          <th>GF</th><th>GC</th><th>DG</th><th>Pts</th><th>Forma</th>
         </tr></thead>
         <tbody>
         <?php foreach ($standings as $row):
           $pos      = (int)$row['rank'];
           $total    = count($standings);
           $posClass = $pos <= 4 ? 'pos-q1' : ($pos >= $total - 2 ? 'pos-rel' : 'pos');
+          $form     = str_split(strtoupper($row['form'] ?? ''));
+          $form     = array_slice($form, -5);
         ?>
         <tr>
           <td class="<?= $posClass ?>"><?= $pos ?></td>
@@ -188,6 +213,13 @@ footer strong{color:#00c853}
           <td><?= $row['gc'] ?></td>
           <td><?= $row['gd'] > 0 ? '+' . $row['gd'] : $row['gd'] ?></td>
           <td class="pts"><?= $row['points'] ?></td>
+          <td>
+            <div style="display:flex;gap:2px;justify-content:center">
+            <?php foreach ($form as $f): ?>
+              <span class="form-badge form-<?= $f ?>"><?= $f ?></span>
+            <?php endforeach; ?>
+            </div>
+          </td>
         </tr>
         <?php endforeach; ?>
         </tbody>
@@ -206,7 +238,7 @@ footer strong{color:#00c853}
   <!-- RESULTADOS -->
   <div id="tab-resultados" class="tab-content <?= $tab==='resultados'?'active':'' ?>">
     <?php if (!empty($live)): ?>
-    <p class="section-hdr" style="color:#e53935">⚡ En vivo ahora</p>
+    <p class="section-hdr" style="color:var(--live)">⚡ En vivo ahora</p>
     <div class="matches-list" style="margin-bottom:2rem">
       <?php foreach ($live as $m): ?>
       <?php include __DIR__ . '/partials/_match_card.php'; ?>
@@ -235,13 +267,62 @@ footer strong{color:#00c853}
     <?php else: ?><div class="empty">No hay partidos programados próximamente.</div><?php endif; ?>
   </div>
 
+  <!-- HISTÓRICOS -->
+  <div id="tab-historicos" class="tab-content <?= $tab==='historicos'?'active':'' ?>">
+    <p class="section-hdr">📅 Resultados Históricos — <?= htmlspecialchars($lg['name']) ?></p>
+
+    <form method="get" action="/argentina" class="hist-filters">
+      <input type="hidden" name="liga" value="<?= htmlspecialchars($leagueKey) ?>">
+      <input type="hidden" name="tab" value="historicos">
+      <label>Año</label>
+      <select name="year" class="hist-select">
+        <?php foreach ($historicalSeasons as $yr => $label): ?>
+        <option value="<?= $yr ?>" <?= $histYear == $yr ? 'selected' : '' ?>><?= htmlspecialchars($label) ?></option>
+        <?php endforeach; ?>
+      </select>
+      <label>Mes</label>
+      <select name="month" class="hist-select">
+        <option value="">Todo el año</option>
+        <?php $meses=['','Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+        for ($mi=1;$mi<=12;$mi++): ?>
+        <option value="<?= $mi ?>" <?= $histMonth == $mi ? 'selected' : '' ?>><?= $meses[$mi] ?></option>
+        <?php endfor; ?>
+      </select>
+      <button type="submit" class="hist-btn">Buscar</button>
+      <?php if (!empty($historicalMatches)): ?>
+      <span class="hist-count"><?= count($historicalMatches) ?> partidos encontrados</span>
+      <?php endif; ?>
+    </form>
+
+    <?php if (!empty($historicalMatches)):
+      $byMonth = [];
+      foreach ($historicalMatches as $m) {
+        $monthKey = date('F Y', strtotime($m['date']));
+        $byMonth[$monthKey][] = $m;
+      }
+    ?>
+    <?php foreach ($byMonth as $monthLabel => $mGroup): ?>
+    <div class="hist-date-grp">
+      <div class="hist-date-label">📅 <?= $monthLabel ?></div>
+      <div class="matches-list">
+        <?php foreach ($mGroup as $m): ?>
+        <?php include __DIR__ . '/partials/_match_card.php'; ?>
+        <?php endforeach; ?>
+      </div>
+    </div>
+    <?php endforeach; ?>
+    <?php elseif ($tab === 'historicos'): ?>
+    <div class="empty">Seleccioná un año y mes para ver los resultados históricos.</div>
+    <?php endif; ?>
+  </div>
+
   <!-- JUGADORES -->
   <div id="tab-jugadores" class="tab-content <?= $tab==='jugadores'?'active':'' ?>">
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:2rem">
       <div>
         <p class="section-hdr">⚽ Goleadores</p>
         <?php if (!empty($topScorers)): ?>
-        <div class="players-grid" style="grid-template-columns:1fr">
+        <div style="display:grid;gap:.6rem">
           <?php foreach ($topScorers as $i => $p):
             $athlete = $p['athlete'] ?? $p;
             $pname   = $athlete['displayName'] ?? $athlete['name'] ?? '?';
@@ -272,7 +353,7 @@ footer strong{color:#00c853}
       <div>
         <p class="section-hdr">🎯 Asistencias</p>
         <?php if (!empty($topAssists)): ?>
-        <div class="players-grid" style="grid-template-columns:1fr">
+        <div style="display:grid;gap:.6rem">
           <?php foreach ($topAssists as $i => $p):
             $athlete = $p['athlete'] ?? $p;
             $pname   = $athlete['displayName'] ?? $athlete['name'] ?? '?';
@@ -336,9 +417,6 @@ footer strong{color:#00c853}
   </div>
 </div>
 
-<footer><strong>Desde la Línea</strong> · Portal Deportivo · <?= date('Y') ?> · Datos: API-Football</footer>
-<script>
-// navegación por tabs via links GET
-</script>
+<footer><strong>Desde la Línea</strong> · Portal Deportivo · <?= date('Y') ?> · Datos: ESPN / API-Football</footer>
 </body>
 </html>
