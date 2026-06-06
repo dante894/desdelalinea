@@ -22,6 +22,12 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:0 2rem
 .hero h1{font-family:'Barlow Condensed',sans-serif;font-size:clamp(2.5rem,5vw,4rem);font-weight:900;color:#fff;text-transform:uppercase;letter-spacing:2px}
 .hero h1 span{color:var(--cel)}
 .hero p{color:var(--muted);margin-top:.5rem}
+/* LEAGUE SELECTOR */
+.league-selector{display:flex;gap:.6rem;flex-wrap:wrap;margin-top:1.2rem}
+.league-btn{display:flex;align-items:center;gap:.4rem;padding:.45rem 1rem;border-radius:6px;border:1px solid var(--border);background:var(--card);color:var(--muted);text-decoration:none;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.85rem;text-transform:uppercase;letter-spacing:.5px;transition:all .2s}
+.league-btn:hover{border-color:var(--cel);color:var(--text)}
+.league-btn.active{background:var(--cel2);border-color:var(--cel);color:#fff}
+.league-btn .flag{font-size:1rem}
 .tabs{display:flex;gap:0;border-bottom:2px solid var(--border);margin:0}
 .tab{padding:.8rem 1.4rem;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.9rem;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .2s;text-decoration:none}
 .tab:hover{color:var(--text)}
@@ -122,23 +128,34 @@ footer strong{color:#00c853}
 
 <div class="hero">
   <div class="container">
-    <h1>🇦🇷 Liga <span>Argentina</span></h1>
-    <p>Liga Profesional · Tabla, resultados, goleadores y más</p>
+    <h1>🇦🇷 Fútbol <span>Argentino</span></h1>
+    <p>Ligas, posiciones, fechas y goleadores del fútbol argentino</p>
+    <div class="league-selector">
+      <?php foreach ($argLeagues as $key => $l): ?>
+      <a href="?liga=<?= $key ?>&tab=<?= $tab ?>"
+         class="league-btn <?= $leagueKey === $key ? 'active' : '' ?>">
+        <span class="flag"><?= $l['flag'] ?></span><?= htmlspecialchars($l['name']) ?>
+      </a>
+      <?php endforeach; ?>
+    </div>
   </div>
 </div>
 
 <div class="container">
   <div class="tabs">
-    <a href="?tab=tabla"      class="tab <?= $tab==='tabla'?'active':''      ?>" onclick="setTab('tabla',this)">Tabla</a>
-    <a href="?tab=resultados" class="tab <?= $tab==='resultados'?'active':'' ?>" onclick="setTab('resultados',this)">Resultados</a>
-    <a href="?tab=proximos"   class="tab <?= $tab==='proximos'?'active':''   ?>" onclick="setTab('proximos',this)">Próximos</a>
-    <a href="?tab=jugadores"  class="tab <?= $tab==='jugadores'?'active':''  ?>" onclick="setTab('jugadores',this)">Jugadores</a>
-    <a href="?tab=noticias"   class="tab <?= $tab==='noticias'?'active':''   ?>" onclick="setTab('noticias',this)">Noticias</a>
+    <a href="?liga=<?= $leagueKey ?>&tab=tabla"      class="tab <?= $tab==='tabla'?'active':''      ?>">Tabla</a>
+    <a href="?liga=<?= $leagueKey ?>&tab=resultados" class="tab <?= $tab==='resultados'?'active':'' ?>">Resultados</a>
+    <a href="?liga=<?= $leagueKey ?>&tab=proximos"   class="tab <?= $tab==='proximos'?'active':''   ?>">Próximos</a>
+    <a href="?liga=<?= $leagueKey ?>&tab=jugadores"  class="tab <?= $tab==='jugadores'?'active':''  ?>">Jugadores</a>
+    <a href="?liga=<?= $leagueKey ?>&tab=noticias"   class="tab <?= $tab==='noticias'?'active':''   ?>">Noticias</a>
   </div>
 
   <!-- TABLA -->
   <div id="tab-tabla" class="tab-content <?= $tab==='tabla'?'active':'' ?>">
-    <?php if (!empty($standings)): ?>
+    <p class="section-hdr"><?= $lg['flag'] ?> Tabla de posiciones — <?= htmlspecialchars($lg['name']) ?> <?= $lg['season'] ?></p>
+    <?php if (!$lg['has_standings']): ?>
+    <div class="empty">📋 <?= htmlspecialchars($lg['name']) ?> es una copa por eliminación directa — no tiene tabla de posiciones.<br><small>Mirá los partidos en "Resultados" o "Próximos".</small></div>
+    <?php elseif (!empty($standings)): ?>
     <div class="standings-wrap">
       <table class="standings-table">
         <thead><tr>
@@ -200,7 +217,7 @@ footer strong{color:#00c853}
       <?php endforeach; ?>
     </div>
     <?php endif; ?>
-    <p class="section-hdr">Últimos resultados</p>
+    <p class="section-hdr">Últimos resultados — <?= htmlspecialchars($lg['name']) ?></p>
     <?php if (!empty($recent)): ?>
     <div class="matches-list">
       <?php foreach (array_reverse($recent) as $m): ?>
@@ -230,7 +247,7 @@ footer strong{color:#00c853}
 
   <!-- PRÓXIMOS -->
   <div id="tab-proximos" class="tab-content <?= $tab==='proximos'?'active':'' ?>">
-    <p class="section-hdr">Próximos partidos</p>
+    <p class="section-hdr">Próximos partidos — <?= htmlspecialchars($lg['name']) ?></p>
     <?php if (!empty($upcoming)): ?>
     <div class="matches-list">
       <?php foreach ($upcoming as $m): ?>
@@ -350,11 +367,11 @@ footer strong{color:#00c853}
     </div>
     <?php if ($totalPages > 1): ?>
     <div class="pagination">
-      <?php if ($page > 1): ?><a href="?tab=noticias&page=<?= $page-1 ?>" class="page-btn">← Anterior</a><?php endif; ?>
+      <?php if ($page > 1): ?><a href="?liga=<?= $leagueKey ?>&tab=noticias&page=<?= $page-1 ?>" class="page-btn">← Anterior</a><?php endif; ?>
       <?php for ($p=max(1,$page-2);$p<=min($totalPages,$page+2);$p++): ?>
-      <a href="?tab=noticias&page=<?= $p ?>" class="page-btn <?= $p===$page?'active':'' ?>"><?= $p ?></a>
+      <a href="?liga=<?= $leagueKey ?>&tab=noticias&page=<?= $p ?>" class="page-btn <?= $p===$page?'active':'' ?>"><?= $p ?></a>
       <?php endfor; ?>
-      <?php if ($page < $totalPages): ?><a href="?tab=noticias&page=<?= $page+1 ?>" class="page-btn">Siguiente →</a><?php endif; ?>
+      <?php if ($page < $totalPages): ?><a href="?liga=<?= $leagueKey ?>&tab=noticias&page=<?= $page+1 ?>" class="page-btn">Siguiente →</a><?php endif; ?>
     </div>
     <?php endif; ?>
     <?php else: ?><div class="empty">No hay noticias argentinas. Ejecutá el scraper.</div><?php endif; ?>
@@ -363,10 +380,7 @@ footer strong{color:#00c853}
 
 <footer><strong>Desde la Línea</strong> · Portal Deportivo · <?= date('Y') ?> · Datos: API-Football</footer>
 <script>
-function setTab(name,el){
-  event.preventDefault();
-  window.location.href='?tab='+name;
-}
+// navegación por tabs via links GET
 </script>
 </body>
 </html>

@@ -10,12 +10,23 @@ class FootballApiRapid
 
     // IDs de ligas
     public array $leagues = [
-        'argentina' => ['id' => 128, 'name' => 'Liga Profesional', 'flag' => '🇦🇷', 'season' => 2024],
-        'premier'   => ['id' => 39,  'name' => 'Premier League',   'flag' => '🏴󠁧󠁢󠁥󠁮󠁧󠁿', 'season' => 2024],
-        'laliga'    => ['id' => 140, 'name' => 'La Liga',          'flag' => '🇪🇸', 'season' => 2024],
-        'seriea'    => ['id' => 135, 'name' => 'Serie A',          'flag' => '🇮🇹', 'season' => 2024],
-        'bundesliga'=> ['id' => 78,  'name' => 'Bundesliga',       'flag' => '🇩🇪', 'season' => 2024],
-        'ligue1'    => ['id' => 61,  'name' => 'Ligue 1',          'flag' => '🇫🇷', 'season' => 2024],
+        'argentina'         => ['id' => 128, 'name' => 'Liga Profesional',  'flag' => '🇦🇷', 'season' => 2024],
+        'copa_argentina'    => ['id' => 130, 'name' => 'Copa Argentina',    'flag' => '🏆', 'season' => 2024],
+        'primera_nacional'  => ['id' => 131, 'name' => 'Primera Nacional',  'flag' => '🥈', 'season' => 2024],
+        'copa_liga'         => ['id' => 529, 'name' => 'Copa de la Liga',   'flag' => '⚽', 'season' => 2025],
+        'premier'           => ['id' => 39,  'name' => 'Premier League',    'flag' => '🏴󠁧󠁢󠁥󠁮󠁧󠁿', 'season' => 2024],
+        'laliga'            => ['id' => 140, 'name' => 'La Liga',           'flag' => '🇪🇸', 'season' => 2024],
+        'seriea'            => ['id' => 135, 'name' => 'Serie A',           'flag' => '🇮🇹', 'season' => 2024],
+        'bundesliga'        => ['id' => 78,  'name' => 'Bundesliga',        'flag' => '🇩🇪', 'season' => 2024],
+        'ligue1'            => ['id' => 61,  'name' => 'Ligue 1',           'flag' => '🇫🇷', 'season' => 2024],
+    ];
+
+    // Ligas argentinas agrupadas para la vista
+    public array $argLeagues = [
+        'argentina'        => ['id' => 128, 'name' => 'Liga Profesional', 'flag' => '🇦🇷', 'season' => 2024, 'has_standings' => true],
+        'copa_argentina'   => ['id' => 130, 'name' => 'Copa Argentina',   'flag' => '🏆',  'season' => 2024, 'has_standings' => false],
+        'primera_nacional' => ['id' => 131, 'name' => 'Primera Nacional', 'flag' => '🥈',  'season' => 2024, 'has_standings' => true],
+        'copa_liga'        => ['id' => 529, 'name' => 'Copa de la Liga',  'flag' => '⚽',  'season' => 2025, 'has_standings' => false],
     ];
 
     private function get(string $endpoint): ?array
