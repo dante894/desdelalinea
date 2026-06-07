@@ -11,30 +11,27 @@ use App\Core\Database;
 class Scraper
 {
     private array $sources = [
-        // ── ARGENTINA ──────────────────────────────────────────────────
+        // ── ARGENTINA & SUDAMÉRICA ──────────────────────────────────────
         [
-            'name'     => 'Olé',
-            'url'      => 'https://www.ole.com.ar/rss/futbol.xml',
+            'name'     => 'Marca Argentina',
+            'url'      => 'https://e00-marca.uecdn.es/rss/futbol/futbol-internacional.xml',
             'category' => 'Argentina',
             'lang'     => 'es',
+            'keywords' => ['argentina','boca','river','racing','independiente','san lorenzo','belgrano','estudiantes','velez','huracan','newells','central','lanus','defensa','arsenal','talleres','atletico tucuman','gimnasia','platense'],
         ],
         [
-            'name'     => 'TyC Sports',
-            'url'      => 'https://www.tycsports.com/rss.xml',
+            'name'     => 'Mundo Deportivo Internacional',
+            'url'      => 'https://www.mundodeportivo.com/rss/futbol/america-del-sur.xml',
             'category' => 'Argentina',
             'lang'     => 'es',
+            'keywords' => ['argentina','sudamerica','america del sur','libertadores','sudamericana','conmebol'],
         ],
         [
-            'name'     => 'Infobae Fútbol',
-            'url'      => 'https://www.infobae.com/feeds/rss/deportes/futbol-argentino/',
+            'name'     => 'BBC Fútbol Sudamérica',
+            'url'      => 'https://feeds.bbci.co.uk/sport/football/rss.xml',
             'category' => 'Argentina',
-            'lang'     => 'es',
-        ],
-        [
-            'name'     => 'ESPN Argentina',
-            'url'      => 'https://www.espn.com.ar/espn/rss/futbol/news',
-            'category' => 'Argentina',
-            'lang'     => 'es',
+            'lang'     => 'en',
+            'keywords' => ['argentina','south america','copa libertadores','sudamericana','boca','river','messi'],
         ],
         // ── EUROPA ─────────────────────────────────────────────────────
         [
@@ -46,12 +43,6 @@ class Scraper
         [
             'name'     => 'Marca Champions',
             'url'      => 'https://e00-marca.uecdn.es/rss/futbol/champions-league.xml',
-            'category' => 'Europa',
-            'lang'     => 'es',
-        ],
-        [
-            'name'     => 'AS Fútbol',
-            'url'      => 'https://rss.as.com/rss/futbol.xml',
             'category' => 'Europa',
             'lang'     => 'es',
         ],
@@ -87,6 +78,12 @@ class Scraper
             'category' => 'Internacional',
             'lang'     => 'en',
         ],
+        [
+            'name'     => 'Marca Internacional',
+            'url'      => 'https://e00-marca.uecdn.es/rss/futbol/futbol-internacional.xml',
+            'category' => 'Internacional',
+            'lang'     => 'es',
+        ],
     ];
 
     private int $maxPerSource = 20;
@@ -112,6 +109,17 @@ class Scraper
                     $check = $db->prepare("SELECT id FROM news WHERE slug = ? OR source_url = ? LIMIT 1");
                     $check->execute([$slug, $item['link']]);
                     if ($check->fetch()) continue;
+
+                    // ── Filtro por keywords de fuente (ej: feeds generales usados para Argentina) ──
+                    $srcKeywords = $src['keywords'] ?? [];
+                    if (!empty($srcKeywords)) {
+                        $haystack = mb_strtolower($item['title'] . ' ' . $item['description']);
+                        $match = false;
+                        foreach ($srcKeywords as $kw) {
+                            if (str_contains($haystack, mb_strtolower($kw))) { $match = true; break; }
+                        }
+                        if (!$match) continue;
+                    }
 
                     // ── Filtro: solo noticias de fútbol ──────────────────
                     if (!$this->isFootballNews($item['title'] . ' ' . $item['description'])) {
