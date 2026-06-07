@@ -146,18 +146,18 @@ $ligas = array_filter($api2->leagues, fn($k) => $k !== 'argentina', ARRAY_FILTER
         <tr>
           <td class="<?= $posClass ?>"><?= $pos ?></td>
           <td><div class="team-cell">
-            <?php if ($row['team']['logo']??false): ?>
-            <img class="team-logo" src="<?= htmlspecialchars($row['team']['logo']) ?>" alt="">
+            <?php if ($row['logo']??false): ?>
+            <img class="team-logo" src="<?= htmlspecialchars($row['logo']) ?>" alt="">
             <?php endif; ?>
-            <?= htmlspecialchars($row['team']['name']) ?>
+            <?= htmlspecialchars($row['name'] ?? '—') ?>
           </div></td>
-          <td><?= $row['all']['played'] ?></td>
-          <td><?= $row['all']['win'] ?></td>
-          <td><?= $row['all']['draw'] ?></td>
-          <td><?= $row['all']['lose'] ?></td>
-          <td><?= $row['all']['goals']['for'] ?></td>
-          <td><?= $row['all']['goals']['against'] ?></td>
-          <td><?= $row['goalsDiff'] ?></td>
+          <td><?= $row['played'] ?></td>
+          <td><?= $row['wins'] ?></td>
+          <td><?= $row['draws'] ?></td>
+          <td><?= $row['losses'] ?></td>
+          <td><?= $row['gf'] ?></td>
+          <td><?= $row['gc'] ?></td>
+          <td><?= $row['gd'] ?></td>
           <td class="pts"><?= $row['points'] ?></td>
           <td><?php foreach(str_split($row['form']??'') as $f): ?>
             <span class="form-badge form-<?= $f ?>"><?= $f ?></span>
@@ -183,16 +183,16 @@ $ligas = array_filter($api2->leagues, fn($k) => $k !== 'argentina', ARRAY_FILTER
       <?php foreach ($live as $m): ?>
       <div class="match-card live">
         <div class="team-home">
-          <?php if ($m['teams']['home']['logo']??false): ?><img class="team-logo-sm" src="<?= htmlspecialchars($m['teams']['home']['logo']) ?>" alt=""><?php endif; ?>
-          <span class="team-name"><?= htmlspecialchars($m['teams']['home']['name']) ?></span>
+          <?php if ($m['home']['logo']??false): ?><img class="team-logo-sm" src="<?= htmlspecialchars($m['home']['logo']) ?>" alt=""><?php endif; ?>
+          <span class="team-name"><?= htmlspecialchars($m['home']['name']) ?></span>
         </div>
         <div class="score-box">
-          <div class="score-num"><?= $m['goals']['home']??'0' ?> - <?= $m['goals']['away']??'0' ?></div>
-          <div class="match-status status-live">● En vivo <?= $m['fixture']['status']['elapsed']??'' ?>'</div>
+          <div class="score-num"><?= $m['home']['score']??'0' ?> - <?= $m['away']['score']??'0' ?></div>
+          <div class="match-status status-live">● En vivo <?= htmlspecialchars($m['clock']??'') ?>'</div>
         </div>
         <div class="team-away">
-          <?php if ($m['teams']['away']['logo']??false): ?><img class="team-logo-sm" src="<?= htmlspecialchars($m['teams']['away']['logo']) ?>" alt=""><?php endif; ?>
-          <span class="team-name"><?= htmlspecialchars($m['teams']['away']['name']) ?></span>
+          <?php if ($m['away']['logo']??false): ?><img class="team-logo-sm" src="<?= htmlspecialchars($m['away']['logo']) ?>" alt=""><?php endif; ?>
+          <span class="team-name"><?= htmlspecialchars($m['away']['name']) ?></span>
         </div>
       </div>
       <?php endforeach; ?>
@@ -204,17 +204,17 @@ $ligas = array_filter($api2->leagues, fn($k) => $k !== 'argentina', ARRAY_FILTER
       <?php foreach (array_reverse($recent) as $m): ?>
       <div class="match-card">
         <div class="team-home">
-          <?php if ($m['teams']['home']['logo']??false): ?><img class="team-logo-sm" src="<?= htmlspecialchars($m['teams']['home']['logo']) ?>" alt=""><?php endif; ?>
-          <span class="team-name"><?= htmlspecialchars($m['teams']['home']['name']) ?></span>
+          <?php if ($m['home']['logo']??false): ?><img class="team-logo-sm" src="<?= htmlspecialchars($m['home']['logo']) ?>" alt=""><?php endif; ?>
+          <span class="team-name <?= ($m['home']['winner']??false)?'':''; ?>"><?= htmlspecialchars($m['home']['name']) ?></span>
         </div>
         <div class="score-box">
-          <div class="score-num"><?= $m['goals']['home']??'—' ?> - <?= $m['goals']['away']??'—' ?></div>
+          <div class="score-num"><?= $m['home']['score']??'—' ?> - <?= $m['away']['score']??'—' ?></div>
           <div class="match-status status-ft">Final</div>
-          <div class="match-round"><?= htmlspecialchars($m['league']['round']??'') ?></div>
+          <div class="match-round"><?= htmlspecialchars($m['round']??'') ?></div>
         </div>
         <div class="team-away">
-          <?php if ($m['teams']['away']['logo']??false): ?><img class="team-logo-sm" src="<?= htmlspecialchars($m['teams']['away']['logo']) ?>" alt=""><?php endif; ?>
-          <span class="team-name"><?= htmlspecialchars($m['teams']['away']['name']) ?></span>
+          <?php if ($m['away']['logo']??false): ?><img class="team-logo-sm" src="<?= htmlspecialchars($m['away']['logo']) ?>" alt=""><?php endif; ?>
+          <span class="team-name"><?= htmlspecialchars($m['away']['name']) ?></span>
         </div>
       </div>
       <?php endforeach; ?>
@@ -230,17 +230,17 @@ $ligas = array_filter($api2->leagues, fn($k) => $k !== 'argentina', ARRAY_FILTER
       <?php foreach ($upcoming as $m): ?>
       <div class="match-card">
         <div class="team-home">
-          <?php if ($m['teams']['home']['logo']??false): ?><img class="team-logo-sm" src="<?= htmlspecialchars($m['teams']['home']['logo']) ?>" alt=""><?php endif; ?>
-          <span class="team-name"><?= htmlspecialchars($m['teams']['home']['name']) ?></span>
+          <?php if ($m['home']['logo']??false): ?><img class="team-logo-sm" src="<?= htmlspecialchars($m['home']['logo']) ?>" alt=""><?php endif; ?>
+          <span class="team-name"><?= htmlspecialchars($m['home']['name']) ?></span>
         </div>
         <div class="score-box">
           <div class="score-vs">VS</div>
-          <div class="match-status status-ns"><?= date('d/m H:i', strtotime($m['fixture']['date'])) ?></div>
-          <div class="match-round"><?= htmlspecialchars($m['league']['round']??'') ?></div>
+          <div class="match-status status-ns"><?= $m['date'] ? date('d/m H:i', strtotime($m['date'])) : '' ?></div>
+          <div class="match-round"><?= htmlspecialchars($m['round']??'') ?></div>
         </div>
         <div class="team-away">
-          <?php if ($m['teams']['away']['logo']??false): ?><img class="team-logo-sm" src="<?= htmlspecialchars($m['teams']['away']['logo']) ?>" alt=""><?php endif; ?>
-          <span class="team-name"><?= htmlspecialchars($m['teams']['away']['name']) ?></span>
+          <?php if ($m['away']['logo']??false): ?><img class="team-logo-sm" src="<?= htmlspecialchars($m['away']['logo']) ?>" alt=""><?php endif; ?>
+          <span class="team-name"><?= htmlspecialchars($m['away']['name']) ?></span>
         </div>
       </div>
       <?php endforeach; ?>
@@ -255,25 +255,27 @@ $ligas = array_filter($api2->leagues, fn($k) => $k !== 'argentina', ARRAY_FILTER
         <p class="section-hdr">⚽ Goleadores</p>
         <?php if (!empty($topScorers)): ?>
         <?php foreach ($topScorers as $i => $p):
-          $pl=$p['player']; $st=$p['statistics'][0]??[];
+          $athlete = $p['athlete'] ?? [];
+          $team    = $p['team']    ?? [];
+          $value   = $p['value']   ?? ($p['displayValue'] ?? '0');
+          $photo   = $athlete['headshot']['href'] ?? ($athlete['flag']['href'] ?? null);
         ?>
         <div class="player-card" style="margin-bottom:.5rem">
           <span class="rank-num"><?= $i+1 ?></span>
-          <?php if ($pl['photo']??false): ?>
-          <img src="<?= htmlspecialchars($pl['photo']) ?>" style="width:40px;height:40px;border-radius:50%;object-fit:cover;object-position:top" alt="">
+          <?php if ($photo): ?>
+          <img src="<?= htmlspecialchars($photo) ?>" style="width:40px;height:40px;border-radius:50%;object-fit:cover;object-position:top" alt="">
           <?php else: ?>
           <div style="width:40px;height:40px;border-radius:50%;background:var(--dark2);display:flex;align-items:center;justify-content:center">👤</div>
           <?php endif; ?>
           <div style="flex:1">
-            <div class="player-name"><?= htmlspecialchars($pl['name']) ?></div>
+            <div class="player-name"><?= htmlspecialchars($athlete['displayName'] ?? $athlete['shortName'] ?? '—') ?></div>
             <div class="player-club">
-              <?php if ($st['team']['logo']??false): ?><img src="<?= htmlspecialchars($st['team']['logo']) ?>" style="width:14px;height:14px;object-fit:contain" alt=""><?php endif; ?>
-              <?= htmlspecialchars($st['team']['name']??'') ?>
-              · <?= htmlspecialchars($pl['nationality']??'') ?>
+              <?php if ($team['logo']??false): ?><img src="<?= htmlspecialchars($team['logo']) ?>" style="width:14px;height:14px;object-fit:contain" alt=""><?php endif; ?>
+              <?= htmlspecialchars($team['displayName'] ?? $team['shortDisplayName'] ?? '') ?>
             </div>
           </div>
           <div style="text-align:center">
-            <div class="stat-num"><?= $st['goals']['total']??0 ?></div>
+            <div class="stat-num"><?= htmlspecialchars((string)$value) ?></div>
             <div class="stat-lbl">Goles</div>
           </div>
         </div>
