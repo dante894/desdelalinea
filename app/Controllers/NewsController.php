@@ -8,6 +8,9 @@ class NewsController
 {
     private int $perPage = 12;
 
+    // Categorías válidas (solo fútbol)
+    private array $validCats = ['Argentina', 'Europa', 'Fichajes', 'Internacional'];
+
     public function index(): void
     {
         $db       = Database::getInstance();
@@ -15,23 +18,39 @@ class NewsController
         $page     = max(1, (int)($_GET['page'] ?? 1));
         $offset   = ($page - 1) * $this->perPage;
 
-        $where  = $category ? "WHERE category = :cat" : '';
-        $params = $category ? [':cat' => $category] : [];
+        // Validar que la categoría sea de fútbol
+        if ($category && !in_array($category, $this->validCats, true)) {
+            $category = '';
+        }
 
-        $total = (int)$db->prepare("SELECT COUNT(*) FROM news $where")->execute($params) ?: 0;
-        $stmt  = $db->prepare("SELECT COUNT(*) FROM news $where");
-        $stmt->execute($params);
+        if ($category) {
+            $where  = "WHERE category = :cat";
+            $params = [':cat' => $category];
+        } else {
+            // Todas las categorías de fútbol (excluye restos viejos)
+            $placeholders = implode(',', array_fill(0, count($this->validCats), '?'));
+            $where  = "WHERE category IN ($placeholders)";
+            $params = $this->validCats;
+        }
+
+        $stmt = $db->prepare("SELECT COUNT(*) FROM news $where");
+        $stmt->execute(array_values($params));
         $total = (int)$stmt->fetchColumn();
 
         $stmt2 = $db->prepare("SELECT * FROM news $where ORDER BY scraped_at DESC LIMIT :limit OFFSET :offset");
-        if ($category) $stmt2->bindValue(':cat', $category);
+        if ($category) {
+            $stmt2->bindValue(':cat', $category);
+        } else {
+            foreach (array_values($this->validCats) as $i => $cat) {
+                $stmt2->bindValue($i + 1, $cat);
+            }
+        }
         $stmt2->bindValue(':limit',  $this->perPage, \PDO::PARAM_INT);
         $stmt2->bindValue(':offset', $offset,        \PDO::PARAM_INT);
         $stmt2->execute();
         $news = $stmt2->fetchAll(\PDO::FETCH_ASSOC);
 
-        $catStmt = $db->query("SELECT DISTINCT category FROM news ORDER BY category");
-        $categories = $catStmt->fetchAll(\PDO::FETCH_COLUMN);
+        $categories = $this->validCats;
 
         $totalPages = (int)ceil($total / $this->perPage);
 

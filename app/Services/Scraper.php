@@ -11,60 +11,80 @@ use App\Core\Database;
 class Scraper
 {
     private array $sources = [
-        // Fuentes en español (sin traducción)
+        // ── ARGENTINA ──────────────────────────────────────────────────
         [
-            'name'     => 'ESPN Argentina',
-            'url'      => 'https://www.espn.com.ar/espn/rss/news',
-            'category' => 'Deportes',
+            'name'     => 'Olé',
+            'url'      => 'https://www.ole.com.ar/rss/futbol.xml',
+            'category' => 'Argentina',
             'lang'     => 'es',
         ],
+        [
+            'name'     => 'TyC Sports',
+            'url'      => 'https://www.tycsports.com/rss.xml',
+            'category' => 'Argentina',
+            'lang'     => 'es',
+        ],
+        [
+            'name'     => 'Infobae Fútbol',
+            'url'      => 'https://www.infobae.com/feeds/rss/deportes/futbol-argentino/',
+            'category' => 'Argentina',
+            'lang'     => 'es',
+        ],
+        [
+            'name'     => 'ESPN Argentina',
+            'url'      => 'https://www.espn.com.ar/espn/rss/futbol/news',
+            'category' => 'Argentina',
+            'lang'     => 'es',
+        ],
+        // ── EUROPA ─────────────────────────────────────────────────────
+        [
+            'name'     => 'Marca',
+            'url'      => 'https://e00-marca.uecdn.es/rss/futbol/primera-division.xml',
+            'category' => 'Europa',
+            'lang'     => 'es',
+        ],
+        [
+            'name'     => 'Marca Champions',
+            'url'      => 'https://e00-marca.uecdn.es/rss/futbol/champions-league.xml',
+            'category' => 'Europa',
+            'lang'     => 'es',
+        ],
+        [
+            'name'     => 'AS Fútbol',
+            'url'      => 'https://rss.as.com/rss/futbol.xml',
+            'category' => 'Europa',
+            'lang'     => 'es',
+        ],
+        [
+            'name'     => 'Mundo Deportivo',
+            'url'      => 'https://www.mundodeportivo.com/rss/futbol.xml',
+            'category' => 'Europa',
+            'lang'     => 'es',
+        ],
+        [
+            'name'     => 'BBC Fútbol',
+            'url'      => 'https://feeds.bbci.co.uk/sport/football/rss.xml',
+            'category' => 'Europa',
+            'lang'     => 'en',
+        ],
+        [
+            'name'     => 'Sky Sports Fútbol',
+            'url'      => 'https://www.skysports.com/rss/12040',
+            'category' => 'Europa',
+            'lang'     => 'en',
+        ],
+        // ── FICHAJES & MERCADO ──────────────────────────────────────────
         [
             'name'     => 'Transfermarkt',
             'url'      => 'https://www.transfermarkt.es/rss/news',
             'category' => 'Fichajes',
             'lang'     => 'es',
         ],
-        // Fuentes en inglés (se traducen)
+        // ── INTERNACIONAL / SELECCIONES ─────────────────────────────────
         [
-            'name'     => 'ESPN Fútbol',
+            'name'     => 'ESPN Fútbol Internacional',
             'url'      => 'https://www.espn.com/espn/rss/soccer/news',
-            'category' => 'Fútbol',
-            'lang'     => 'en',
-        ],
-        [
-            'name'     => 'ESPN NBA',
-            'url'      => 'https://www.espn.com/espn/rss/nba/news',
-            'category' => 'Basketball',
-            'lang'     => 'en',
-        ],
-        [
-            'name'     => 'ESPN NFL',
-            'url'      => 'https://www.espn.com/espn/rss/nfl/news',
-            'category' => 'Americano',
-            'lang'     => 'en',
-        ],
-        [
-            'name'     => 'BBC Sport',
-            'url'      => 'https://feeds.bbci.co.uk/sport/rss.xml',
             'category' => 'Internacional',
-            'lang'     => 'en',
-        ],
-        [
-            'name'     => 'BBC Fútbol',
-            'url'      => 'https://feeds.bbci.co.uk/sport/football/rss.xml',
-            'category' => 'Fútbol',
-            'lang'     => 'en',
-        ],
-        [
-            'name'     => 'Sky Sports',
-            'url'      => 'https://www.skysports.com/rss/12040',
-            'category' => 'Internacional',
-            'lang'     => 'en',
-        ],
-        [
-            'name'     => 'Fox Sports',
-            'url'      => 'https://api.foxsports.com/v1/rss?partnerKey=zBaFxRyGKCfxBagJG9b8pqLyndmvo7UU',
-            'category' => 'Deportes',
             'lang'     => 'en',
         ],
     ];
@@ -92,6 +112,11 @@ class Scraper
                     $check = $db->prepare("SELECT id FROM news WHERE slug = ? OR source_url = ? LIMIT 1");
                     $check->execute([$slug, $item['link']]);
                     if ($check->fetch()) continue;
+
+                    // ── Filtro: solo noticias de fútbol ──────────────────
+                    if (!$this->isFootballNews($item['title'] . ' ' . $item['description'])) {
+                        continue;
+                    }
 
                     $stmt = $db->prepare("
                         INSERT INTO news (title, slug, summary, image_url, source_url, source_name, category, published_at)
@@ -229,6 +254,62 @@ class Scraper
         } catch (\Throwable) {
             return $text;
         }
+    }
+
+    /**
+     * Devuelve true si el texto contiene términos de fútbol.
+     * Descarta noticias de tenis, básquet, F1, boxeo, etc.
+     */
+    private function isFootballNews(string $text): bool
+    {
+        $text = mb_strtolower($text);
+
+        // Palabras que confirman que ES fútbol
+        $footballWords = [
+            'fútbol','futbol','football','soccer',
+            'gol','golazo','penalti','penal','penalty','offside','fuera de juego',
+            'liga','premier','champions','bundesliga','serie a','ligue 1','mls',
+            'copa','torneo','superliga','libertadores','sudamericana',
+            'partido','match','clásico','clasico','derbi','derby',
+            'entrenador','técnico','manager','coach','plantilla','squad',
+            'transferencia','fichaje','traspaso','mercado','contrato',
+            'delantero','defensor','mediocampista','portero','arquero',
+            'forward','midfielder','defender','goalkeeper','keeper',
+            'selección','seleccion','mundial','eurocopa','euro ','copa del rey',
+            'amistoso','friendly',
+            // Ligas específicas
+            'laliga','la liga','premier league','serie a','bundesliga',
+            // Clubes populares (cubren muchos casos)
+            'boca','river','racing','independiente','san lorenzo','huracán',
+            'barcelona','real madrid','atletico','atletico de madrid','atlético',
+            'manchester','arsenal','chelsea','liverpool','city','united',
+            'juventus','inter','milan','napoli','roma',
+            'psg','paris saint','marseille',
+            'bayern','dortmund','leverkusen',
+        ];
+
+        // Palabras que descartan (otras disciplinas)
+        $excludeWords = [
+            'nba','nfl','nhl','mlb','wnba','ncaa',
+            'tenis','tennis','wimbledon','roland garros','us open','australian open',
+            'formula 1','formula1','f1','gran prix','motogp','nascar',
+            'boxeo','boxing','ufc','mma','wbc','wba',
+            'baloncesto','basketball','basquetbol',
+            'rugby','golf','cricket','béisbol','baseball','softball',
+            'atletismo','natación','natacion','ciclismo',
+            'wrestling','wwe',
+        ];
+
+        foreach ($excludeWords as $word) {
+            if (str_contains($text, $word)) return false;
+        }
+
+        foreach ($footballWords as $word) {
+            if (str_contains($text, $word)) return true;
+        }
+
+        // Si no hay ninguna pista, descartar
+        return false;
     }
 
     private function slugify(string $text): string
