@@ -14,11 +14,12 @@ class EuropaController
         $tab  = $_GET['tab']  ?? 'tabla';
         $liga = $_GET['liga'] ?? 'premier';
 
-        // Validar liga
+        // Validar liga: excluir 'argentina' y ligas no europeas
         if (!isset($api->leagues[$liga]) || $liga === 'argentina') {
             $liga = 'premier';
         }
-        $lg = $api->leagues[$liga];
+        $lg   = $api->leagues[$liga];
+        $slug = $lg['slug'];   // ← usar 'slug', no 'id'
 
         // Noticias europeas: categoría 'Europa' + fuentes conocidas
         $news = $db->query("
@@ -46,18 +47,18 @@ class EuropaController
         $live       = [];
 
         if ($tab === 'tabla') {
-            $standings = $api->getStandings($lg['id'], $lg['season']);
+            $standings = $api->getStandings($slug);
         }
         if ($tab === 'resultados') {
-            $recent = $api->getMatches($lg['id'], $lg['season'], 'FT', 10);
-            $live   = $api->getLiveMatches($lg['id']);
+            $recent = $api->getMatches($slug, 10);
+            $live   = $api->getLiveMatches($slug);
         }
         if ($tab === 'proximos') {
-            $upcoming = $api->getNextMatches($lg['id'], $lg['season'], 10);
+            $upcoming = $api->getNextMatches($slug, 10);
         }
         if ($tab === 'jugadores') {
-            $topScorers = $api->getTopScorers($lg['id'], $lg['season']);
-            $topAssists = $api->getTopAssists($lg['id'], $lg['season']);
+            $topScorers = $api->getTopScorers($slug);
+            $topAssists = $api->getTopAssists($slug);
         }
 
         require __DIR__ . '/../Views/europa.php';
