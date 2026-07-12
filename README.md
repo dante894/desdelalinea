@@ -30,12 +30,7 @@ php scrape.php
 */30 * * * * php /var/www/html/scrape.php >> /var/log/scraper.log 2>&1
 ```
 
-**Desde el panel admin:**  
-Entrá a `/admin` → botón "Ejecutar Scraper Ahora".
 
-## Credenciales por defecto
-- Email: `admin@desdelalinea.com`  
-- Password: `password`
 
 ## Rutas
 | Ruta | Descripción |
