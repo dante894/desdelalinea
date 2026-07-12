@@ -6,28 +6,23 @@ use App\Core\Database;
 
 /**
  * Scraper de noticias deportivas via RSS.
-<<<<<<< HEAD
  *
  * Fuentes: SOLO diarios y medios argentinos (nacionales y de cada provincia).
- * Cada noticia se clasifica automáticamente en 2 categorías únicas:
- *   - "Mundial 2026"  → si el título/copete menciona el Mundial / la Selección en el Mundial
- *   - "Argentina"     → el resto de las noticias de fútbol argentino (clubes, AFA, torneos locales)
+ * Cada noticia se clasifica automaticamente en 2 categorias unicas:
+ *   - "Mundial 2026"  -> si el titulo/copete menciona el Mundial / la Seleccion en el Mundial
+ *   - "Argentina"     -> el resto de las noticias de futbol argentino (clubes, AFA, torneos locales)
  *
  * Nota: los diarios de provincia suelen cambiar la URL de su feed RSS con el tiempo.
- * Si alguna fuente empieza a fallar, revisá el log en /admin (botón "Ejecutar Scraper Ahora")
- * y actualizá esa URL puntual; el resto de las fuentes sigue funcionando igual (cada una
+ * Si alguna fuente empieza a fallar, revisa el log en /admin (boton "Ejecutar Scraper Ahora")
+ * y actualiza esa URL puntual; el resto de las fuentes sigue funcionando igual (cada una
  * corre en su propio try/catch).
-=======
- * Fuentes: Infobae Deportes, TyC Sports, Ole, ESPN Argentina, Marca.
->>>>>>> cb116038913c643d0c8c68dd276ebb93c78d7470
  */
 class Scraper
 {
     private array $sources = [
-<<<<<<< HEAD
-        // ── MEDIOS NACIONALES (Buenos Aires) ─────────────────────────────
+        // MEDIOS NACIONALES (Buenos Aires)
         [
-            'name' => 'Olé',
+            'name' => 'Ole',
             'url'  => 'https://www.ole.com.ar/rss/ultimas-noticias/',
             'lang' => 'es',
         ],
@@ -42,22 +37,22 @@ class Scraper
             'lang' => 'es',
         ],
         [
-            'name' => 'Clarín Deportes',
+            'name' => 'Clarin Deportes',
             'url'  => 'https://www.clarin.com/rss/deportes/',
             'lang' => 'es',
         ],
         [
-            'name' => 'La Nación Deportes',
+            'name' => 'La Nacion Deportes',
             'url'  => 'https://www.lanacion.com.ar/arc/outboundfeeds/rss/category/deportes/?outputType=xml',
             'lang' => 'es',
         ],
         [
-            'name' => 'Página/12 Deportes',
+            'name' => 'Pagina/12 Deportes',
             'url'  => 'https://www.pagina12.com.ar/rss/secciones/deportes/notas',
             'lang' => 'es',
         ],
         [
-            'name' => 'Ámbito Deportes',
+            'name' => 'Ambito Deportes',
             'url'  => 'https://www.ambito.com/contenidos/deportes.xml',
             'lang' => 'es',
         ],
@@ -76,9 +71,9 @@ class Scraper
             'url'  => 'https://www.espn.com.ar/rss/futbol/noticias',
             'lang' => 'es',
         ],
-        // ── DIARIOS DE PROVINCIA (federalizamos las fuentes) ─────────────
+        // DIARIOS DE PROVINCIA (federalizamos las fuentes)
         [
-            'name' => 'La Voz del Interior (Córdoba)',
+            'name' => 'La Voz del Interior (Cordoba)',
             'url'  => 'https://www.lavoz.com.ar/arc/outboundfeeds/rss/category/deportes/?outputType=xml',
             'lang' => 'es',
         ],
@@ -93,12 +88,12 @@ class Scraper
             'lang' => 'es',
         ],
         [
-            'name' => 'La Gaceta (Tucumán)',
+            'name' => 'La Gaceta (Tucuman)',
             'url'  => 'https://www.lagaceta.com.ar/rss/deportes.xml',
             'lang' => 'es',
         ],
         [
-            'name' => 'Río Negro',
+            'name' => 'Rio Negro',
             'url'  => 'https://www.rionegro.com.ar/deportes/feed/',
             'lang' => 'es',
         ],
@@ -111,89 +106,14 @@ class Scraper
 
     /**
      * Palabras que indican que la noticia es sobre el Mundial 2026 (o Mundiales en general).
-     * Si el título/copete matchea alguna, la noticia se guarda con category = 'Mundial 2026'.
-     * Si no matchea ninguna, se guarda como 'Argentina' (fútbol local/Selección en general).
+     * Si el titulo/copete matchea alguna, la noticia se guarda con category = 'Mundial 2026'.
+     * Si no matchea ninguna, se guarda como 'Argentina' (futbol local/Seleccion en general).
      */
     private array $mundialWords = [
-        'mundial 2026','mundial de futbol','mundial de fútbol','copa del mundo',
+        'mundial 2026','mundial de futbol','mundial de futbol','copa del mundo',
         'world cup','fifa world cup','mundial de la fifa',
         'eliminatorias sudamericanas','eliminatorias al mundial','repechaje mundial',
         'sorteo del mundial','sede mundialista','estadio mundialista',
-=======
-        // ── ARGENTINA & SUDAMÉRICA ──────────────────────────────────────
-        [
-            'name'     => 'Marca Argentina',
-            'url'      => 'https://e00-marca.uecdn.es/rss/futbol/futbol-internacional.xml',
-            'category' => 'Argentina',
-            'lang'     => 'es',
-            'keywords' => ['argentina','boca','river','racing','independiente','san lorenzo','belgrano','estudiantes','velez','huracan','newells','central','lanus','defensa','arsenal','talleres','atletico tucuman','gimnasia','platense'],
-        ],
-        [
-            'name'     => 'Mundo Deportivo Internacional',
-            'url'      => 'https://www.mundodeportivo.com/rss/futbol/america-del-sur.xml',
-            'category' => 'Argentina',
-            'lang'     => 'es',
-            'keywords' => ['argentina','sudamerica','america del sur','libertadores','sudamericana','conmebol'],
-        ],
-        [
-            'name'     => 'BBC Fútbol Sudamérica',
-            'url'      => 'https://feeds.bbci.co.uk/sport/football/rss.xml',
-            'category' => 'Argentina',
-            'lang'     => 'en',
-            'keywords' => ['argentina','south america','copa libertadores','sudamericana','boca','river','messi'],
-        ],
-        // ── EUROPA ─────────────────────────────────────────────────────
-        [
-            'name'     => 'Marca',
-            'url'      => 'https://e00-marca.uecdn.es/rss/futbol/primera-division.xml',
-            'category' => 'Europa',
-            'lang'     => 'es',
-        ],
-        [
-            'name'     => 'Marca Champions',
-            'url'      => 'https://e00-marca.uecdn.es/rss/futbol/champions-league.xml',
-            'category' => 'Europa',
-            'lang'     => 'es',
-        ],
-        [
-            'name'     => 'Mundo Deportivo',
-            'url'      => 'https://www.mundodeportivo.com/rss/futbol.xml',
-            'category' => 'Europa',
-            'lang'     => 'es',
-        ],
-        [
-            'name'     => 'BBC Fútbol',
-            'url'      => 'https://feeds.bbci.co.uk/sport/football/rss.xml',
-            'category' => 'Europa',
-            'lang'     => 'en',
-        ],
-        [
-            'name'     => 'Sky Sports Fútbol',
-            'url'      => 'https://www.skysports.com/rss/12040',
-            'category' => 'Europa',
-            'lang'     => 'en',
-        ],
-        // ── FICHAJES & MERCADO ──────────────────────────────────────────
-        [
-            'name'     => 'Transfermarkt',
-            'url'      => 'https://www.transfermarkt.es/rss/news',
-            'category' => 'Fichajes',
-            'lang'     => 'es',
-        ],
-        // ── INTERNACIONAL / SELECCIONES ─────────────────────────────────
-        [
-            'name'     => 'ESPN Fútbol Internacional',
-            'url'      => 'https://www.espn.com/espn/rss/soccer/news',
-            'category' => 'Internacional',
-            'lang'     => 'en',
-        ],
-        [
-            'name'     => 'Marca Internacional',
-            'url'      => 'https://e00-marca.uecdn.es/rss/futbol/futbol-internacional.xml',
-            'category' => 'Internacional',
-            'lang'     => 'es',
-        ],
->>>>>>> cb116038913c643d0c8c68dd276ebb93c78d7470
     ];
 
     private int $maxPerSource = 20;
@@ -209,45 +129,20 @@ class Scraper
         foreach ($this->sources as $src) {
             try {
                 $items = $this->fetchRSS($src['url']);
-                $this->log[] = "✅ {$src['name']}: " . count($items) . " ítems";
+                $this->log[] = "OK {$src['name']}: " . count($items) . " items";
 
                 foreach ($items as $item) {
                     $total++;
                     $slug = $this->slugify($item['title']);
 
-                    // Evitar duplicados por slug o source_url
                     $check = $db->prepare("SELECT id FROM news WHERE slug = ? OR source_url = ? LIMIT 1");
                     $check->execute([$slug, $item['link']]);
                     if ($check->fetch()) continue;
 
-<<<<<<< HEAD
-=======
-                    // ── Filtro por keywords de fuente (ej: feeds generales usados para Argentina) ──
-                    $srcKeywords = $src['keywords'] ?? [];
-                    if (!empty($srcKeywords)) {
-                        $haystack = mb_strtolower($item['title'] . ' ' . $item['description']);
-                        $match = false;
-                        foreach ($srcKeywords as $kw) {
-                            if (str_contains($haystack, mb_strtolower($kw))) { $match = true; break; }
-                        }
-                        if (!$match) continue;
-                    }
-
->>>>>>> cb116038913c643d0c8c68dd276ebb93c78d7470
-                    // ── Filtro: solo noticias de fútbol ──────────────────
                     if (!$this->isFootballNews($item['title'] . ' ' . $item['description'])) {
                         continue;
                     }
 
-<<<<<<< HEAD
-                    // Traducir si la fuente está en inglés (por si se agrega alguna a futuro)
-=======
-                    $stmt = $db->prepare("
-                        INSERT INTO news (title, slug, summary, image_url, source_url, source_name, category, published_at)
-                        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-                    ");
-                    // Traducir si la fuente está en inglés
->>>>>>> cb116038913c643d0c8c68dd276ebb93c78d7470
                     $title   = $item['title'];
                     $summary = $item['description'];
                     if (($src['lang'] ?? 'es') === 'en') {
@@ -255,8 +150,6 @@ class Scraper
                         $summary = $this->translate($summary);
                     }
 
-<<<<<<< HEAD
-                    // ── Clasificación: Mundial 2026 vs Argentina (local) ──
                     $category = $this->isMundialNews($title . ' ' . $summary)
                         ? 'Mundial 2026'
                         : 'Argentina';
@@ -265,8 +158,6 @@ class Scraper
                         INSERT INTO news (title, slug, summary, image_url, source_url, source_name, category, published_at)
                         VALUES (?, ?, ?, ?, ?, ?, ?, ?)
                     ");
-=======
->>>>>>> cb116038913c643d0c8c68dd276ebb93c78d7470
                     $stmt->execute([
                         $title,
                         $slug,
@@ -274,18 +165,14 @@ class Scraper
                         $item['image'] ?? null,
                         $item['link'],
                         $src['name'],
-<<<<<<< HEAD
                         $category,
-=======
-                        $src['category'],
->>>>>>> cb116038913c643d0c8c68dd276ebb93c78d7470
                         $item['pubDate'] ?? date('Y-m-d H:i:s'),
                     ]);
                     $new++;
                 }
             } catch (\Throwable $e) {
                 $errors[] = "{$src['name']}: " . $e->getMessage();
-                $this->log[] = "❌ {$src['name']}: " . $e->getMessage();
+                $this->log[] = "ERROR {$src['name']}: " . $e->getMessage();
             }
         }
 
@@ -319,7 +206,7 @@ class Scraper
         libxml_use_internal_errors(true);
         $feed = simplexml_load_string($xml);
         if ($feed === false) {
-            throw new \RuntimeException("XML inválido en: {$url}");
+            throw new \RuntimeException("XML invalido en: {$url}");
         }
 
         $items   = [];
@@ -338,7 +225,6 @@ class Scraper
             $description = trim(strip_tags((string)($entry->description ?? ($entry->summary ?? ''))));
             $pubDate     = $this->parseDate((string)($entry->pubDate ?? ($entry->updated ?? '')));
 
-            // Imagen: media:content o enclosure
             $image = null;
             if ($media && isset($media->content)) {
                 $image = (string)$media->content->attributes()['url'] ?? null;
@@ -346,7 +232,6 @@ class Scraper
             if (!$image && isset($entry->enclosure)) {
                 $image = (string)$entry->enclosure->attributes()['url'] ?? null;
             }
-            // Intentar sacar imagen del HTML de description
             if (!$image) {
                 preg_match('/<img[^>]+src=["\']([^"\']+)["\']/', (string)($entry->description ?? ''), $m);
                 $image = $m[1] ?? null;
@@ -372,7 +257,7 @@ class Scraper
         if (empty($raw)) return date('Y-m-d H:i:s');
         try {
             return (new \DateTime($raw))->format('Y-m-d H:i:s');
-        } catch (\Throwable) {
+        } catch (\Throwable $e) {
             return date('Y-m-d H:i:s');
         }
     }
@@ -392,52 +277,44 @@ class Scraper
                 $translated .= $part[0] ?? '';
             }
             return $translated ?: $text;
-        } catch (\Throwable) {
+        } catch (\Throwable $e) {
             return $text;
         }
     }
 
-    /**
-     * Devuelve true si el texto contiene términos de fútbol.
-     * Descarta noticias de tenis, básquet, F1, boxeo, etc.
-     */
     private function isFootballNews(string $text): bool
     {
         $text = mb_strtolower($text);
 
-        // Palabras que confirman que ES fútbol
         $footballWords = [
-            'fútbol','futbol','football','soccer',
+            'futbol','football','soccer',
             'gol','golazo','penalti','penal','penalty','offside','fuera de juego',
             'liga','premier','champions','bundesliga','serie a','ligue 1','mls',
             'copa','torneo','superliga','libertadores','sudamericana',
-            'partido','match','clásico','clasico','derbi','derby',
-            'entrenador','técnico','manager','coach','plantilla','squad',
+            'partido','match','clasico','derbi','derby',
+            'entrenador','tecnico','manager','coach','plantilla','squad',
             'transferencia','fichaje','traspaso','mercado','contrato',
             'delantero','defensor','mediocampista','portero','arquero',
             'forward','midfielder','defender','goalkeeper','keeper',
-            'selección','seleccion','mundial','eurocopa','euro ','copa del rey',
+            'seleccion','mundial','eurocopa','euro ','copa del rey',
             'amistoso','friendly',
-            // Ligas específicas
-            'laliga','la liga','premier league','serie a','bundesliga',
-            // Clubes populares (cubren muchos casos)
-            'boca','river','racing','independiente','san lorenzo','huracán',
-            'barcelona','real madrid','atletico','atletico de madrid','atlético',
+            'laliga','la liga','premier league',
+            'boca','river','racing','independiente','san lorenzo','huracan',
+            'barcelona','real madrid','atletico','atletico de madrid',
             'manchester','arsenal','chelsea','liverpool','city','united',
             'juventus','inter','milan','napoli','roma',
             'psg','paris saint','marseille',
             'bayern','dortmund','leverkusen',
         ];
 
-        // Palabras que descartan (otras disciplinas)
         $excludeWords = [
             'nba','nfl','nhl','mlb','wnba','ncaa',
             'tenis','tennis','wimbledon','roland garros','us open','australian open',
             'formula 1','formula1','f1','gran prix','motogp','nascar',
             'boxeo','boxing','ufc','mma','wbc','wba',
             'baloncesto','basketball','basquetbol',
-            'rugby','golf','cricket','béisbol','baseball','softball',
-            'atletismo','natación','natacion','ciclismo',
+            'rugby','golf','cricket','beisbol','baseball','softball',
+            'atletismo','natacion','ciclismo',
             'wrestling','wwe',
         ];
 
@@ -449,14 +326,9 @@ class Scraper
             if (str_contains($text, $word)) return true;
         }
 
-        // Si no hay ninguna pista, descartar
         return false;
     }
 
-<<<<<<< HEAD
-    /**
-     * Devuelve true si el texto habla del Mundial 2026 / Copa del Mundo.
-     */
     private function isMundialNews(string $text): bool
     {
         $text = mb_strtolower($text);
@@ -466,19 +338,15 @@ class Scraper
         return false;
     }
 
-=======
->>>>>>> cb116038913c643d0c8c68dd276ebb93c78d7470
     private function slugify(string $text): string
     {
         $text = mb_strtolower($text);
         $text = strtr($text, [
-            'á'=>'a','é'=>'e','í'=>'i','ó'=>'o','ú'=>'u','ü'=>'u','ñ'=>'n',
-            'Á'=>'a','É'=>'e','Í'=>'i','Ó'=>'o','Ú'=>'u','Ü'=>'u','Ñ'=>'n',
+            'a'=>'a','e'=>'e','i'=>'i','o'=>'o','u'=>'u','n'=>'n',
         ]);
         $text = preg_replace('/[^a-z0-9\s-]/', '', $text);
         $text = preg_replace('/[\s-]+/', '-', trim($text));
         $slug = mb_substr($text, 0, 180);
-        // append random suffix to avoid collisions
         return $slug . '-' . substr(md5($text . microtime()), 0, 6);
     }
 }
