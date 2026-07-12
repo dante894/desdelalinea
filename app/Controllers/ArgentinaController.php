@@ -25,7 +25,11 @@ class ArgentinaController
         $offset = ($page - 1) * $this->perPage;
 
         // Noticias argentinas
+<<<<<<< HEAD
         $whereArg = "category = 'Argentina'
+=======
+        $whereArg = "source_name = 'ESPN Argentina'
+>>>>>>> cb116038913c643d0c8c68dd276ebb93c78d7470
              OR title LIKE '%Argentina%' OR title LIKE '%Boca%' OR title LIKE '%River%'
              OR title LIKE '%selección%' OR title LIKE '%AFA%'
              OR title LIKE '%Racing%' OR title LIKE '%Independiente%'

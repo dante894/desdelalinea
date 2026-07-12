@@ -8,8 +8,13 @@ class NewsController
 {
     private int $perPage = 12;
 
+<<<<<<< HEAD
     // Categorías válidas: Mundial 2026 y fútbol local argentino
     private array $validCats = ['Mundial 2026', 'Argentina'];
+=======
+    // Categorías válidas (solo fútbol)
+    private array $validCats = ['Argentina', 'Europa', 'Fichajes', 'Internacional'];
+>>>>>>> cb116038913c643d0c8c68dd276ebb93c78d7470
 
     public function index(): void
     {

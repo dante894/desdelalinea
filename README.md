@@ -1,5 +1,6 @@
 # Desde la Línea — Portal Deportivo
 
+<<<<<<< HEAD
 Portal de noticias deportivas con scraper automático de RSS, enfocado en el **Mundial 2026** y el **fútbol argentino local**.
 
 ## Fuentes de scraping
@@ -10,6 +11,16 @@ Todas son medios argentinos (nacionales y de provincia). Cada noticia se clasifi
 Medios incluidos: Olé, TyC Sports, Infobae Deportes, Clarín Deportes, La Nación Deportes, Página/12 Deportes, Ámbito Deportes, Perfil Deportes, Diario Popular, ESPN Argentina, La Voz del Interior (Córdoba), La Capital (Rosario), Los Andes (Mendoza), La Gaceta (Tucumán), Río Negro y El Litoral (Santa Fe).
 
 > Los diarios de provincia cambian de tanto en tanto la URL de su RSS. Si una fuente deja de traer noticias, fijate el log de `/admin` → "Ejecutar Scraper Ahora" (marca cada fuente con ✅ o ❌) y actualizá esa URL puntual en `app/Services/Scraper.php`. El resto de las fuentes sigue funcionando igual aunque una falle.
+=======
+Portal de noticias deportivas con scraper automático de RSS.
+
+## Fuentes de scraping
+- Infobae Deportes
+- TyC Sports
+- Ole
+- ESPN Argentina
+- Marca (Internacional)
+>>>>>>> cb116038913c643d0c8c68dd276ebb93c78d7470
 
 ## Instalación
 
@@ -32,12 +43,16 @@ php scrape.php
 */30 * * * * php /var/www/html/scrape.php >> /var/log/scraper.log 2>&1
 ```
 
+<<<<<<< HEAD
 **Desde el panel admin:**  
 Entrá a `/admin` → botón "Ejecutar Scraper Ahora".
 
 ## Credenciales por defecto
 - Email: `admin@desdelalinea.com`  
 - Password: `password`
+=======
+
+>>>>>>> cb116038913c643d0c8c68dd276ebb93c78d7470
 
 ## Rutas
 | Ruta | Descripción |
